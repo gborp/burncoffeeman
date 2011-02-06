@@ -115,6 +115,22 @@ public class AnimPreview extends JPanel {
 				}
 				g.setColor(color);
 				g.fillRect((int) (x * zoomLevel), (int) (y * zoomLevel + yOffset), (int) zoomLevel, (int) zoomLevel);
+
+				if (color.getAlpha() > 0) {
+					g.setColor(Color.BLACK);
+					if (tile.isUpperBorder(x, y)) {
+						g.drawLine(x * zoomLevel, y * zoomLevel + yOffset, x * zoomLevel + zoomLevel, y * zoomLevel + yOffset);
+					}
+					if (tile.isBottomBorder(x, y)) {
+						g.drawLine(x * zoomLevel, y * zoomLevel + yOffset + zoomLevel, x * zoomLevel + zoomLevel, y * zoomLevel + yOffset + zoomLevel);
+					}
+					if (tile.isLeftBorder(x, y)) {
+						g.drawLine(x * zoomLevel, y * zoomLevel + yOffset, x * zoomLevel, y * zoomLevel + yOffset + zoomLevel);
+					}
+					if (tile.isRightBorder(x, y)) {
+						g.drawLine(x * zoomLevel + zoomLevel, y * zoomLevel + yOffset, x * zoomLevel + zoomLevel, y * zoomLevel + yOffset + zoomLevel);
+					}
+				}
 			}
 		}
 
