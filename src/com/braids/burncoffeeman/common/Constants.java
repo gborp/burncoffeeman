@@ -8,8 +8,8 @@ public class Constants {
 	public static final Color   transparentColor1                       = new Color(96, 96, 96);
 	public static final Color   transparentColor2                       = new Color(160, 160, 160);
 
-	public static final Color   COLOR_KEY_OWN_COLOR_1                   = new Color(255, 0, 255);
-	public static final Color   COLOR_KEY_OWN_COLOR_2                   = new Color(255, 1, 255);
+	public static final Color   COLOR_KEY_OWN_COLOR_1                   = new Color(255, 0, 255, 128);
+	public static final Color   COLOR_KEY_OWN_COLOR_2                   = new Color(255, 1, 255, 128);
 
 	public static final int     MAX_PACKET_SIZE                         = 256 * 1024;
 

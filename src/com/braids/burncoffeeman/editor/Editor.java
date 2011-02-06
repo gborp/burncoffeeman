@@ -298,8 +298,28 @@ public class Editor extends JPanel {
 
 		for (int y = 0; y < tile.getHeight(); y++) {
 			for (int x = 0; x < tile.getWidth(); x++) {
-				g.setColor(tile.getPixel(x, y));
-				g.fillRect((int) (x * zoomRatio), (int) (y * zoomRatio + yOffset), (int) zoomRatio, (int) zoomRatio);
+
+				Color color = tile.getPixel(x, y);
+				if (color.equals(Constants.COLOR_KEY_OWN_COLOR_1)) {
+					g.setColor(Color.RED);
+					g.fillRect((int) (x * zoomRatio), (int) (y * zoomRatio + yOffset), (int) zoomRatio, (int) zoomRatio);
+					g.setColor(Color.BLACK);
+					for (int xs = 0; xs < zoomRatio; xs += 2) {
+						g.drawLine(xs + (int) (x * zoomRatio), (int) (y * zoomRatio + yOffset), xs + (int) (x * zoomRatio),
+						        (int) (y * zoomRatio + yOffset + zoomRatio));
+					}
+				} else if (color.equals(Constants.COLOR_KEY_OWN_COLOR_2)) {
+					g.setColor(Color.YELLOW);
+					g.fillRect((int) (x * zoomRatio), (int) (y * zoomRatio + yOffset), (int) zoomRatio, (int) zoomRatio);
+					g.setColor(Color.BLACK);
+					for (int ys = 0; ys < zoomRatio; ys += 2) {
+						g.drawLine((int) (x * zoomRatio), ys + (int) (y * zoomRatio + yOffset), (int) (x * zoomRatio + zoomRatio), ys
+						        + (int) (y * zoomRatio + yOffset));
+					}
+				} else {
+					g.setColor(color);
+					g.fillRect((int) (x * zoomRatio), (int) (y * zoomRatio + yOffset), (int) zoomRatio, (int) zoomRatio);
+				}
 			}
 		}
 

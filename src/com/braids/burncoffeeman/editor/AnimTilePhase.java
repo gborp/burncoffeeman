@@ -120,4 +120,20 @@ public class AnimTilePhase {
 		}
 		arGfx = arNewGfx;
 	}
+
+	public boolean isUpperBorder(int x, int y) {
+		return y == 0 || arGfx[y - 1][x].getAlpha() == 0;
+	}
+
+	public boolean isBottomBorder(int x, int y) {
+		return y == getHeight() - 1 || arGfx[y + 1][x].getAlpha() == 0;
+	}
+
+	public boolean isLeftBorder(int x, int y) {
+		return x == 0 || arGfx[y][x - 1].getAlpha() == 0;
+	}
+
+	public boolean isRightBorder(int x, int y) {
+		return x == getWidth() - 1 || arGfx[y][x + 1].getAlpha() == 0;
+	}
 }
