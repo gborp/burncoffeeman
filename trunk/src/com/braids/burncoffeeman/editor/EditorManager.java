@@ -54,7 +54,7 @@ public class EditorManager {
 		lstGroupsBody.add("default");
 		lstGroupsLegs.add("default");
 
-		loadAnims(new File("gfx/default"));
+		loadAnims(new File("gfx"));
 	}
 
 	private void loadAnim(File file) {
@@ -103,7 +103,7 @@ public class EditorManager {
 	}
 
 	public void saveAnims() {
-		saveAnimGroup(new File("gfx/default"));
+		saveAnimGroup(new File("gfx"));
 	}
 
 	private void saveAnimGroup(File dir) {
