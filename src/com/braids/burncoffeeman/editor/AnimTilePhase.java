@@ -7,17 +7,20 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.braids.burncoffeeman.common.Activity;
+import com.braids.burncoffeeman.common.Direction;
+
 public class AnimTilePhase {
 
 	private String            groupName;
 	private AnimTilePhaseType type;
-	private AnimDirection     direction;
-	private AnimActivityType  activityType;
+	private Direction         direction;
+	private Activity          activityType;
 	private int               phaseNumber;
 
 	private Color[][]         arGfx;
 
-	public AnimTilePhase(String groupName, AnimTilePhaseType type, AnimActivityType activityType, AnimDirection direction, int phase) {
+	public AnimTilePhase(String groupName, AnimTilePhaseType type, Activity activityType, Direction direction, int phase) {
 		this.groupName = groupName;
 		this.type = type;
 		this.activityType = activityType;
@@ -61,6 +64,22 @@ public class AnimTilePhase {
 		}
 	}
 
+	public void saveToBitmap(BufferedImage image, int xoffset, int yoffset) {
+		for (int y = 0; y < getHeight(); y++) {
+			for (int x = 0; x < getWidth(); x++) {
+				image.setRGB(xoffset + x, yoffset + y, arGfx[y][x].getRGB());
+			}
+		}
+	}
+
+	public void loadFromBitmap(BufferedImage image, int xoffset, int yoffset) {
+		for (int y = 0; y < getHeight(); y++) {
+			for (int x = 0; x < getWidth(); x++) {
+				arGfx[y][x] = new Color(image.getRGB(x + xoffset, y + yoffset), true);
+			}
+		}
+	}
+
 	public void loadFile(File file) {
 		try {
 			BufferedImage image = ImageIO.read(file);
@@ -87,15 +106,15 @@ public class AnimTilePhase {
 		this.groupName = groupName;
 	}
 
-	public AnimDirection getDirection() {
+	public Direction getDirection() {
 		return this.direction;
 	}
 
-	public void setDirection(AnimDirection direction) {
+	public void setDirection(Direction direction) {
 		this.direction = direction;
 	}
 
-	public AnimActivityType getActivityType() {
+	public Activity getActivityType() {
 		return this.activityType;
 	}
 

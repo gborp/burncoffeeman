@@ -68,9 +68,9 @@ public class PaletteItem extends JToggleButton {
 				for (int y = 0; y < 16 / 4; y++) {
 					for (int x = 0; x < 16 / 4; x++) {
 						if ((x + y) % 2 == 0) {
-							g.setColor(Constants.transparentColor1);
+							g.setColor(Constants.TRANSPARENT_COLOR_1);
 						} else {
-							g.setColor(Constants.transparentColor2);
+							g.setColor(Constants.TRANSPARENT_COLOR_2);
 						}
 						g.fillRect(x * 4, y * 4, 4, 4);
 					}
