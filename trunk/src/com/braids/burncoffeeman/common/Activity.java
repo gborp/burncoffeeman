@@ -2,23 +2,23 @@ package com.braids.burncoffeeman.common;
 
 public enum Activity {
 	/** Standing activity. */
-	STANDING(1, true),
+	STANDING(1, true, true),
 	/** Standing activity. */
-	STANDING_WITH_BOMB(1, true),
+	STANDING_WITH_BOMB(1, true, false),
 	/** Walking activity. */
-	WALKING(10, true),
+	WALKING(4, true, true),
 	/** Walking with bomb activity. */
-	WALKING_WITH_BOMB(10, true),
+	WALKING_WITH_BOMB(4, true, false),
 	/** Kicking activity. */
-	KICKING(6, false),
+	KICKING(4, false, true),
 	/** Kicking activity. */
-	KICKING_WITH_BOMB(5, false),
+	KICKING_WITH_BOMB(4, false, true),
 	/** Punching activity. */
-	PUNCHING(5, false),
+	PUNCHING(4, false, true),
 	/** Picking up activity. */
-	PICKING_UP(6, false),
+	PICKING_UP(4, false, true),
 	/** Dying activity. */
-	DYING(30, false);
+	DYING(4, false, true);
 
 	/**
 	 * The number of game iterations of the activity for a one-time play. After
@@ -31,6 +31,8 @@ public enum Activity {
 	 */
 	public final boolean repeatable;
 
+	public final boolean hasOwnGfx;
+
 	/**
 	 * Creates a new Activities.
 	 * 
@@ -41,8 +43,27 @@ public enum Activity {
 	 *            tells whether this activity is repeatable once it has been
 	 *            played over
 	 */
-	private Activity(int activityIterations, boolean repeatable) {
+	private Activity(int activityIterations, boolean repeatable, boolean hasOwnGfx) {
 		this.activityIterations = activityIterations;
 		this.repeatable = repeatable;
+		this.hasOwnGfx = hasOwnGfx;
+	}
+
+	public int getIterations() {
+		return activityIterations;
+	}
+
+	public boolean hasOwnGfx() {
+		return hasOwnGfx;
+	}
+
+	public static int getNumberOfOwnGfx() {
+		int result = 0;
+		for (Activity a : Activity.values()) {
+			if (a.hasOwnGfx) {
+				result++;
+			}
+		}
+		return result;
 	}
 }

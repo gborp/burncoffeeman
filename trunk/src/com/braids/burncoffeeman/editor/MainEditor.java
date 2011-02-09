@@ -19,6 +19,8 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.braids.burncoffeeman.common.Activity;
+import com.braids.burncoffeeman.common.Direction;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -63,8 +65,8 @@ public class MainEditor {
 			}
 		});
 
-		cbType = new JComboBox(AnimActivityType.values());
-		cbType.setSelectedItem(AnimActivityType.STANDING);
+		cbType = new JComboBox(Activity.values());
+		cbType.setSelectedItem(Activity.STANDING);
 		cbType.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
@@ -72,8 +74,8 @@ public class MainEditor {
 			}
 		});
 
-		cbDirection = new JComboBox(AnimDirection.values());
-		cbDirection.setSelectedItem(AnimDirection.LEFT);
+		cbDirection = new JComboBox(Direction.values());
+		cbDirection.setSelectedItem(Direction.LEFT);
 		cbDirection.addItemListener(new ItemListener() {
 
 			public void itemStateChanged(ItemEvent e) {
@@ -128,8 +130,8 @@ public class MainEditor {
 
 	private void switchAnimPhase() {
 
-		AnimActivityType type = (AnimActivityType) cbType.getSelectedItem();
-		AnimDirection direction = (AnimDirection) cbDirection.getSelectedItem();
+		Activity type = (Activity) cbType.getSelectedItem();
+		Direction direction = (Direction) cbDirection.getSelectedItem();
 		Integer phase = (Integer) spnPhase.getValue();
 
 		EditorManager em = EditorManager.getInstance();
