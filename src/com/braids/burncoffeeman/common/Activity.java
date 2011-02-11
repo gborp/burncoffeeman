@@ -12,7 +12,7 @@ public enum Activity {
 	/** Kicking activity. */
 	KICKING(4, false, true),
 	/** Kicking activity. */
-	KICKING_WITH_BOMB(4, false, true),
+	KICKING_WITH_BOMB(4, false, false),
 	/** Punching activity. */
 	PUNCHING(4, false, true),
 	/** Picking up activity. */
@@ -60,7 +60,7 @@ public enum Activity {
 	public static int getNumberOfOwnGfx() {
 		int result = 0;
 		for (Activity a : Activity.values()) {
-			if (a.hasOwnGfx) {
+			if (a.hasOwnGfx()) {
 				result++;
 			}
 		}

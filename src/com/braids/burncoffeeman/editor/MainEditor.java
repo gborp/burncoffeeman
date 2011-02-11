@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -57,7 +58,7 @@ public class MainEditor {
 		JPanel pnlCommands = new JPanel(new FlowLayout());
 		JButton btnSaveAll = new JButton(new SaveAllAction());
 
-		spnPhase = new JSpinner(new SpinnerNumberModel(1, 1, 4, 1));
+		spnPhase = new JSpinner(new SpinnerNumberModel(1, 1, 1, 1));
 		spnPhase.addChangeListener(new ChangeListener() {
 
 			public void stateChanged(ChangeEvent e) {
@@ -65,7 +66,13 @@ public class MainEditor {
 			}
 		});
 
-		cbType = new JComboBox(Activity.values());
+		ArrayList<Activity> lstAnimatedActivities = new ArrayList<Activity>();
+		for (Activity li : Activity.values()) {
+			if (li.hasOwnGfx) {
+				lstAnimatedActivities.add(li);
+			}
+		}
+		cbType = new JComboBox(lstAnimatedActivities.toArray());
 		cbType.setSelectedItem(Activity.STANDING);
 		cbType.addItemListener(new ItemListener() {
 
@@ -133,6 +140,13 @@ public class MainEditor {
 		Activity type = (Activity) cbType.getSelectedItem();
 		Direction direction = (Direction) cbDirection.getSelectedItem();
 		Integer phase = (Integer) spnPhase.getValue();
+
+		int maxAnimPhases = type.getIterations();
+		if (phase > maxAnimPhases) {
+			phase = maxAnimPhases;
+		}
+
+		spnPhase.setModel(new SpinnerNumberModel((int) phase, 1, maxAnimPhases, 1));
 
 		EditorManager em = EditorManager.getInstance();
 

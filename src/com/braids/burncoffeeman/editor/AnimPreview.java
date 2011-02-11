@@ -17,7 +17,7 @@ public class AnimPreview extends JPanel {
 	private static final int COLOR_CHANGE_INTERVAL = 8;
 	private static final int MAX_PHASE_COUNT       = 4;
 
-	private int              zoomLevel;
+	private float            zoomLevel;
 	private Color            ownColor1;
 	private Color            ownColor2;
 	private Color            grassColor1;
@@ -78,36 +78,43 @@ public class AnimPreview extends JPanel {
 			}
 		}
 
-		g.translate(16 * zoomLevel / 2, 16 * zoomLevel / 2);
+		g.translate((int) (16 * zoomLevel / 2), (int) (16 * zoomLevel / 2));
 
-		int yOffset = 0;
+		Color[][] arGfxWhole = new Color[16][16];
+
 		AnimTilePhase currentHead = EditorManager.getInstance().getCurrentHead();
 		currentHead = EditorManager.getInstance().getCreateAnimTilePhase(currentHead.getGroupName(), currentHead.getType(), currentHead.getActivityType(),
 		        currentHead.getDirection(), phaseCount);
-
-		paintTile(g, currentHead, yOffset);
-		yOffset += currentHead.getHeight() * zoomLevel;
-
 		AnimTilePhase currentBody = EditorManager.getInstance().getCurrentBody();
 		currentBody = EditorManager.getInstance().getCreateAnimTilePhase(currentBody.getGroupName(), currentBody.getType(), currentBody.getActivityType(),
 		        currentBody.getDirection(), phaseCount);
-
-		paintTile(g, currentBody, yOffset);
-		yOffset += currentBody.getHeight() * zoomLevel;
-
 		AnimTilePhase currentLeg = EditorManager.getInstance().getCurrentLeg();
 		currentLeg = EditorManager.getInstance().getCreateAnimTilePhase(currentLeg.getGroupName(), currentLeg.getType(), currentLeg.getActivityType(),
 		        currentLeg.getDirection(), phaseCount);
 
-		paintTile(g, currentLeg, yOffset);
-		yOffset += currentLeg.getHeight() * zoomLevel;
-	}
+		int yOffset = 0;
+		for (int y = 0; y < currentHead.getHeight(); y++) {
+			for (int x = 0; x < 16; x++) {
+				arGfxWhole[yOffset][x] = currentHead.getPixel(x, y);
+			}
+			yOffset++;
+		}
+		for (int y = 0; y < currentBody.getHeight(); y++) {
+			for (int x = 0; x < 16; x++) {
+				arGfxWhole[yOffset][x] = currentBody.getPixel(x, y);
+			}
+			yOffset++;
+		}
+		for (int y = 0; y < currentLeg.getHeight(); y++) {
+			for (int x = 0; x < 16; x++) {
+				arGfxWhole[yOffset][x] = currentLeg.getPixel(x, y);
+			}
+			yOffset++;
+		}
 
-	private void paintTile(Graphics g, AnimTilePhase tile, int yOffset) {
-
-		for (int y = 0; y < tile.getHeight(); y++) {
-			for (int x = 0; x < tile.getWidth(); x++) {
-				Color color = tile.getPixel(x, y);
+		for (int y = 0; y < 16; y++) {
+			for (int x = 0; x < 16; x++) {
+				Color color = arGfxWhole[y][x];
 				if (color.equals(Constants.COLOR_KEY_OWN_COLOR_1)) {
 					color = ownColor1;
 				} else if (color.equals(Constants.COLOR_KEY_OWN_COLOR_2)) {
@@ -118,21 +125,39 @@ public class AnimPreview extends JPanel {
 
 				if (color.getAlpha() > 0) {
 					g.setColor(Color.BLACK);
-					if (tile.isUpperBorder(x, y)) {
-						g.drawLine(x * zoomLevel, y * zoomLevel + yOffset, x * zoomLevel + zoomLevel, y * zoomLevel + yOffset);
+					if (isUpperBorder(x, y, arGfxWhole)) {
+						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel + yOffset), (int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel + yOffset));
 					}
-					if (tile.isBottomBorder(x, y)) {
-						g.drawLine(x * zoomLevel, y * zoomLevel + yOffset + zoomLevel, x * zoomLevel + zoomLevel, y * zoomLevel + yOffset + zoomLevel);
+					if (isBottomBorder(x, y, arGfxWhole)) {
+						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel + yOffset + zoomLevel), (int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel
+						        + yOffset + zoomLevel));
 					}
-					if (tile.isLeftBorder(x, y)) {
-						g.drawLine(x * zoomLevel, y * zoomLevel + yOffset, x * zoomLevel, y * zoomLevel + yOffset + zoomLevel);
+					if (isLeftBorder(x, y, arGfxWhole)) {
+						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel + yOffset), (int) (x * zoomLevel), (int) (y * zoomLevel + yOffset + zoomLevel));
 					}
-					if (tile.isRightBorder(x, y)) {
-						g.drawLine(x * zoomLevel + zoomLevel, y * zoomLevel + yOffset, x * zoomLevel + zoomLevel, y * zoomLevel + yOffset + zoomLevel);
+					if (isRightBorder(x, y, arGfxWhole)) {
+						g.drawLine((int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel + yOffset), (int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel
+						        + yOffset + zoomLevel));
 					}
 				}
 			}
 		}
-
 	}
+
+	private boolean isUpperBorder(int x, int y, Color[][] arGfxWhole) {
+		return y == 0 || arGfxWhole[y - 1][x].getAlpha() == 0;
+	}
+
+	private boolean isBottomBorder(int x, int y, Color[][] arGfxWhole) {
+		return y == 16 - 1 || arGfxWhole[y + 1][x].getAlpha() == 0;
+	}
+
+	private boolean isLeftBorder(int x, int y, Color[][] arGfxWhole) {
+		return x == 0 || arGfxWhole[y][x - 1].getAlpha() == 0;
+	}
+
+	private boolean isRightBorder(int x, int y, Color[][] arGfxWhole) {
+		return x == 16 - 1 || arGfxWhole[y][x + 1].getAlpha() == 0;
+	}
+
 }

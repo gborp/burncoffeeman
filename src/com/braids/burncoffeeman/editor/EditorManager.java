@@ -124,7 +124,7 @@ public class EditorManager {
 			        BufferedImage.TYPE_INT_ARGB);
 			int y = 0;
 			for (Activity activityType : Activity.values()) {
-				if (activityType.hasOwnGfx) {
+				if (activityType.hasOwnGfx()) {
 					for (Direction direction : Direction.values()) {
 						for (int phase = 1; phase <= activityType.getIterations(); phase++) {
 							AnimTilePhase tile = getCreateAnimTilePhase(groupName, phaseType, activityType, direction, phase);
