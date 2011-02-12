@@ -17,6 +17,13 @@ public class Helper {
 		bb.put((byte) (i & 255));
 	}
 
+	public static byte[] readByteArray(byte[] input, int offset) {
+		int gfxLegsBytesSize = Helper.bytesToInt(input[offset], input[offset + 1]);
+		byte[] result = new byte[gfxLegsBytesSize];
+		System.arraycopy(input, offset + 2, result, 0, gfxLegsBytesSize);
+		return result;
+	}
+
 	public static byte[] byteBufferToByteArray(ByteBuffer bb) {
 		byte[] bbOutArray = new byte[bb.position()];
 		bb.position(0);
