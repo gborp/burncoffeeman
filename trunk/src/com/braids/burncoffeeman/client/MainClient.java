@@ -65,6 +65,9 @@ public class MainClient {
 		playerInfo.setColor1(Color.GREEN);
 		playerInfo.setColor2(Color.BLUE);
 		playerInfo.setName("Captian Demo");
+		playerInfo.setGfxHeadGroup("default");
+		playerInfo.setGfxBodyGroup("default");
+		playerInfo.setGfxLegsGroup("default");
 
 		comm.outComm(playerInfo.code());
 
