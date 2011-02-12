@@ -49,7 +49,7 @@ public class Player {
 		model.setActivity(Activity.STANDING);
 		model.setX(Constants.COMPONENT_SIZE_IN_VIRTUAL + Constants.COMPONENT_SIZE_IN_VIRTUAL / 2);
 		model.setY(Constants.COMPONENT_SIZE_IN_VIRTUAL + Constants.COMPONENT_SIZE_IN_VIRTUAL / 2);
-		model.setSpeed(0);
+		model.setSpeed(Constants.BOMBERMAN_BASIC_SPEED);
 		model.setVitality(100);
 
 		mapItems = new EnumMap<Item, Integer>(Item.class);
@@ -384,7 +384,7 @@ public class Player {
 		if ((activity == Activity.WALKING) || (activity == Activity.WALKING_WITH_BOMB) || ((activity == Activity.PUNCHING) && isDirectionKeyPressed())) {
 			boolean movementCorrectionActivated = determineNewDirection();
 
-			int speed = Constants.BOMBERMAN_BASIC_SPEED;
+			int speed = model.getSpeed();
 			// TODO
 			// + model.getEffectiveRollerSkates() *
 			// Constants.BOBMERMAN_ROLLER_SKATES_SPEED_INCREMENT;
@@ -447,6 +447,8 @@ public class Player {
 
 			LevelModel levelModel = gameManager.getLevelModel();
 			if (speed > 0) {
+				model.setAnimationPhase((model.getAnimationPhase() + speed) & 0xffff);
+
 				model.setX(model.getX() + getDirectionXMultiplier() * speed);
 				model.setY(model.getY() + getDirectionYMultiplier() * speed);
 				stateChanged = true;
@@ -634,4 +636,15 @@ public class Player {
 		iterationCounter++;
 	}
 
+	public String getGfxHeadGroup() {
+		return playerInfo.getGfxHeadGroup();
+	}
+
+	public String getGfxBodyGroup() {
+		return playerInfo.getGfxBodyGroup();
+	}
+
+	public String getGfxLegsGroup() {
+		return playerInfo.getGfxLegsGroup();
+	}
 }

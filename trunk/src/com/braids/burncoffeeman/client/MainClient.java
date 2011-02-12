@@ -8,9 +8,11 @@ import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
+import com.braids.burncoffeeman.common.AnimTileModel;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.ClientInputModel;
 import com.braids.burncoffeeman.common.Constants;
+import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.LevelModel;
 import com.braids.burncoffeeman.common.PlayerInfoModel;
 import com.braids.burncoffeeman.common.PlayerModel;
@@ -25,6 +27,9 @@ public class MainClient {
 	private Bombs               bombs;
 
 	public MainClient() throws IOException {
+
+		GraphicsTemplateManager.init();
+
 		levelModel = new LevelModel(Constants.LEVEL_WIDTH, Constants.LEVEL_HEIGHT);
 		players = new Players();
 		bombs = new Bombs();
@@ -122,6 +127,10 @@ public class MainClient {
 
 	public void setBombModel(BombModel data) {
 		bombs.setBombModel(data);
+	}
+
+	public void addAnimTileModel(AnimTileModel data) {
+		displayer.addAnimTileModel(data);
 	}
 
 }

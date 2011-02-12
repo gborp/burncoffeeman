@@ -1,15 +1,20 @@
 package com.braids.burncoffeeman.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.braids.burncoffeeman.common.AnimTileModel;
+import com.braids.burncoffeeman.common.AnimTilePhaseType;
 import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.Fire;
+import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.Helper;
 import com.braids.burncoffeeman.common.Item;
 import com.braids.burncoffeeman.common.LevelModel;
@@ -19,19 +24,28 @@ import com.braids.burncoffeeman.common.Wall;
 
 public class GameManager {
 
-	private static GameManager singleton;
+	private static GameManager      singleton;
 
-	private int                playerId;
-	private int                bombId;
-	private List<Player>       lstPlayers;
-	private List<Bomb>         lstBomb;
-	private LevelModel         levelModel;
-	private int                fullMapSendPos;
-	private boolean            mapSentOnce;
+	private GraphicsTemplateManager gtm;
+	private int                     playerId;
+	private int                     bombId;
+	private List<Player>            lstPlayers;
+	private List<Bomb>              lstBomb;
+	private LevelModel              levelModel;
+	private int                     fullMapSendPos;
+	private boolean                 mapSentOnce;
+	private boolean                 gfxSentOnce;
+	private boolean                 clientWantStartMatch;
+	private GamePhase               gamePhase;
+	private ByteBuffer              bbOut;
 
 	public GameManager() {
 		lstPlayers = new ArrayList<Player>();
 		lstBomb = new ArrayList<Bomb>();
+		gamePhase = GamePhase.PRE_MATCH;
+		bbOut = ByteBuffer.allocate(Constants.MAX_PACKET_SIZE);
+		gtm = GraphicsTemplateManager.init();
+		gtm.loadAnimOriginals(new File("gfx"));
 	}
 
 	public static void init() {
@@ -88,7 +102,7 @@ public class GameManager {
 		mapSentOnce = false;
 	}
 
-	private void sendMapSegment(ByteBuffer bbOut) {
+	private void sendMapSegment() {
 		int count;
 		if (mapSentOnce) {
 			count = Constants.SEND_MAP_SEGMENT_PACKET_SIZE;
@@ -108,8 +122,75 @@ public class GameManager {
 	}
 
 	public void mainCycle() {
-		ArrayList<Player> lstPlayersCloned = new ArrayList<Player>(lstPlayers);
-		for (Player player : lstPlayersCloned) {
+		bbOut.clear();
+		switch (gamePhase) {
+			case PRE_MATCH:
+				preMatchCycle();
+				break;
+			case STARTING_MATCH:
+				startingMatchCycle();
+				break;
+			case MATCH:
+				matchCycle();
+				break;
+			case GAME_OVER:
+				gameOverCycle();
+				break;
+		}
+		sendDataToClient();
+	}
+
+	public void preMatchCycle() {
+		mapSentOnce = false;
+		gfxSentOnce = false;
+		if (clientWantStartMatch) {
+			clientWantStartMatch = false;
+			gamePhase = GamePhase.STARTING_MATCH;
+		}
+	}
+
+	public void startingMatchCycle() {
+		if (!mapSentOnce) {
+			sendMapSegment();
+		}
+		if (!gfxSentOnce) {
+			gfxSentOnce = true;
+
+			HashSet<String> setHeadGroups = new HashSet<String>();
+			HashSet<String> setBodyGroups = new HashSet<String>();
+			HashSet<String> setLegsGroups = new HashSet<String>();
+			for (Player player : lstPlayers) {
+				setHeadGroups.add(player.getGfxHeadGroup());
+				setBodyGroups.add(player.getGfxBodyGroup());
+				setLegsGroups.add(player.getGfxLegsGroup());
+			}
+
+			for (String groupName : setHeadGroups) {
+				sendGfx(groupName, AnimTilePhaseType.HEAD);
+			}
+			for (String groupName : setBodyGroups) {
+				sendGfx(groupName, AnimTilePhaseType.BODY);
+			}
+			for (String groupName : setLegsGroups) {
+				sendGfx(groupName, AnimTilePhaseType.LEGS);
+			}
+		}
+
+		if (mapSentOnce && gfxSentOnce) {
+			gamePhase = GamePhase.MATCH;
+		}
+	}
+
+	private void sendGfx(String groupName, AnimTilePhaseType phaseType) {
+		AnimTileModel atm = new AnimTileModel();
+		atm.setGroupName(groupName);
+		atm.setPhaseType(phaseType);
+		atm.setGfx(gtm.getOriginalImage(groupName, phaseType));
+		bbOut.put(atm.code());
+	}
+
+	public void matchCycle() {
+		for (Player player : lstPlayers) {
 			player.cycle();
 		}
 
@@ -117,9 +198,8 @@ public class GameManager {
 			bomb.cycle();
 		}
 
-		ByteBuffer bbOut = ByteBuffer.allocate(Constants.MAX_PACKET_SIZE);
-		sendMapSegment(bbOut);
-		for (Player player : lstPlayersCloned) {
+		sendMapSegment();
+		for (Player player : lstPlayers) {
 			if (player.isStateChanged()) {
 				bbOut.put(player.getCodedModel());
 			}
@@ -130,12 +210,18 @@ public class GameManager {
 			}
 		}
 
-		byte[] bbOutArray = Helper.byteBufferToByteArray(bbOut);
+	}
 
-		for (Player player : lstPlayersCloned) {
-			player.sendToClient(bbOutArray);
+	private void gameOverCycle() {}
+
+	private void sendDataToClient() {
+		if (bbOut.position() > 0) {
+			byte[] bbOutArray = Helper.byteBufferToByteArray(bbOut);
+
+			for (Player player : lstPlayers) {
+				player.sendToClient(bbOutArray);
+			}
 		}
-
 	}
 
 	public void addPlayer(Socket socket) throws IOException {
@@ -210,6 +296,10 @@ public class GameManager {
 	public boolean isPlayerAtComponentPositionExcludePlayer(int componentPosX, int componentPosY, PlayerModel model) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public void clientWantStartMatch() {
+		clientWantStartMatch = true;
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.braids.burncoffeeman.editor;
+package com.braids.burncoffeeman.common;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -6,10 +6,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-
-import com.braids.burncoffeeman.common.Activity;
-import com.braids.burncoffeeman.common.Constants;
-import com.braids.burncoffeeman.common.Direction;
 
 public class AnimTilePhase {
 

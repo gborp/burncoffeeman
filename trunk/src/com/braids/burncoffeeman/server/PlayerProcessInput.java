@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.concurrent.CountDownLatch;
 
 import com.braids.burncoffeeman.common.ClientInputModel;
+import com.braids.burncoffeeman.common.ClientWantStartMatchModel;
 import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.PacketMessageType;
 import com.braids.burncoffeeman.common.PlayerInfoModel;
@@ -58,6 +59,9 @@ public class PlayerProcessInput implements Runnable {
 						case PLAYER_INFO:
 							offset += processPlayerInfo(packetBuffer, offset);
 							break;
+						case CLIENT_WANT_START_MATCH:
+							offset += processClientWantStartMatch(packetBuffer, offset);
+							break;
 						default:
 							System.out.println("ProcessInput.run() invalid input: " + messageType);
 					}
@@ -68,6 +72,14 @@ public class PlayerProcessInput implements Runnable {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private int processClientWantStartMatch(byte[] bytes, int offset) {
+		ClientWantStartMatchModel data = new ClientWantStartMatchModel();
+		int resultOffsetIncrement = data.decode(bytes, offset);
+		GameManager.getInstance().clientWantStartMatch();
+
+		return resultOffsetIncrement;
 	}
 
 	private int processClientInput(byte[] bytes, int offset) {

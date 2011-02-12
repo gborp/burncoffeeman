@@ -11,9 +11,6 @@ public class PlayerInfoModel implements CoderDecoder {
 	String gfxHeadGroup;
 	String gfxBodyGroup;
 	String gfxLegsGroup;
-	byte[] gfxHead;
-	byte[] gfxBody;
-	byte[] gfxLegs;
 
 	public byte[] code() {
 		byte[] nameAsBytes = name.getBytes(Constants.UTF_8);
@@ -21,10 +18,8 @@ public class PlayerInfoModel implements CoderDecoder {
 		byte[] gfxBodyGroupAsBytes = gfxBodyGroup.getBytes(Constants.UTF_8);
 		byte[] gfxLegsGroupAsBytes = gfxLegsGroup.getBytes(Constants.UTF_8);
 
-		int gfxSize = 3 * 2 + (gfxHead != null ? gfxHead.length : 0) + (gfxBody != null ? gfxBody.length : 0) + (gfxLegs != null ? gfxLegs.length : 0);
-
 		ByteBuffer bb = ByteBuffer.allocate(1 + 3 + 3 + 1 + nameAsBytes.length + 1 + gfxHeadGroupAsBytes.length + 1 + gfxBodyGroupAsBytes.length + 1
-		        + gfxLegsGroupAsBytes.length + gfxSize);
+		        + gfxLegsGroupAsBytes.length);
 
 		bb.put((byte) PacketMessageType.PLAYER_INFO.ordinal());
 
@@ -46,27 +41,6 @@ public class PlayerInfoModel implements CoderDecoder {
 
 		bb.put((byte) gfxLegsGroupAsBytes.length);
 		bb.put(gfxLegsGroupAsBytes);
-
-		if (gfxHead != null) {
-			Helper.putShortIntToBuffer(bb, gfxHead.length);
-			bb.put(gfxHead);
-		} else {
-			Helper.putShortIntToBuffer(bb, 0);
-		}
-
-		if (gfxBody != null) {
-			Helper.putShortIntToBuffer(bb, gfxBody.length);
-			bb.put(gfxBody);
-		} else {
-			Helper.putShortIntToBuffer(bb, 0);
-		}
-
-		if (gfxLegs != null) {
-			Helper.putShortIntToBuffer(bb, gfxLegs.length);
-			bb.put(gfxLegs);
-		} else {
-			Helper.putShortIntToBuffer(bb, 0);
-		}
 
 		return bb.array();
 	}
@@ -94,24 +68,6 @@ public class PlayerInfoModel implements CoderDecoder {
 		int gfxLegsGroupAsBytesSize = Helper.byteToInt(bytes[offset]);
 		gfxLegsGroup = new String(bytes, offset + 1, gfxLegsGroupAsBytesSize, Constants.UTF_8);
 		offset += 1 + gfxLegsGroupAsBytesSize;
-
-		int gfxHeadBytesSize = Helper.bytesToInt(bytes[offset], bytes[offset + 1]);
-		if (gfxHeadBytesSize > 0) {
-			gfxHead = Helper.readByteArray(bytes, offset);
-		}
-		offset += 2 + gfxHeadBytesSize;
-
-		int gfxBodyBytesSize = Helper.bytesToInt(bytes[offset], bytes[offset + 1]);
-		if (gfxBodyBytesSize > 0) {
-			gfxBody = Helper.readByteArray(bytes, offset);
-		}
-		offset += 2 + gfxBodyBytesSize;
-
-		int gfxLegsBytesSize = Helper.bytesToInt(bytes[offset], bytes[offset + 1]);
-		if (gfxLegsBytesSize > 0) {
-			gfxLegs = Helper.readByteArray(bytes, offset);
-		}
-		offset += 2 + gfxLegsBytesSize;
 
 		return offset - initialOffset;
 	}

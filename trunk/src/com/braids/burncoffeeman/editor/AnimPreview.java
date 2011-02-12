@@ -80,7 +80,8 @@ public class AnimPreview extends JPanel {
 
 		g.translate((int) (16 * zoomLevel / 2), (int) (16 * zoomLevel / 2));
 
-		GfxHelper.paintBombermanAnimPhase(g, zoomLevel, phaseCount, ownColor1, ownColor2);
+		EditorManager em = EditorManager.getInstance();
+		GfxHelper.paintBombermanAnimPhase(g, zoomLevel, phaseCount, ownColor1, ownColor2, em.getCurrentHead(), em.getCurrentBody(), em.getCurrentLeg());
 	}
 
 }

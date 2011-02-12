@@ -3,24 +3,20 @@ package com.braids.burncoffeeman.common;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import com.braids.burncoffeeman.editor.AnimTilePhase;
-import com.braids.burncoffeeman.editor.EditorManager;
-
 public class GfxHelper {
 
-	public static void paintBombermanAnimPhase(Graphics g, float zoomLevel, int phaseCount, Color ownColor1, Color ownColor2) {
+	public static void paintBombermanAnimPhase(Graphics g, float zoomLevel, int phaseCount, Color ownColor1, Color ownColor2, AnimTilePhase currentHead,
+	        AnimTilePhase currentBody, AnimTilePhase currentLegs) {
 
 		Color[][] arGfxWhole = new Color[16][16];
 
-		AnimTilePhase currentHead = EditorManager.getInstance().getCurrentHead();
-		currentHead = EditorManager.getInstance().getCreateAnimTilePhase(currentHead.getGroupName(), currentHead.getType(), currentHead.getActivityType(),
-		        currentHead.getDirection(), phaseCount);
-		AnimTilePhase currentBody = EditorManager.getInstance().getCurrentBody();
-		currentBody = EditorManager.getInstance().getCreateAnimTilePhase(currentBody.getGroupName(), currentBody.getType(), currentBody.getActivityType(),
-		        currentBody.getDirection(), phaseCount);
-		AnimTilePhase currentLeg = EditorManager.getInstance().getCurrentLeg();
-		currentLeg = EditorManager.getInstance().getCreateAnimTilePhase(currentLeg.getGroupName(), currentLeg.getType(), currentLeg.getActivityType(),
-		        currentLeg.getDirection(), phaseCount);
+		GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
+		currentHead = gtm
+		        .getAnimPhase(currentHead.getGroupName(), currentHead.getType(), currentHead.getActivityType(), currentHead.getDirection(), phaseCount);
+		currentBody = gtm
+		        .getAnimPhase(currentBody.getGroupName(), currentBody.getType(), currentBody.getActivityType(), currentBody.getDirection(), phaseCount);
+		currentLegs = gtm
+		        .getAnimPhase(currentLegs.getGroupName(), currentLegs.getType(), currentLegs.getActivityType(), currentLegs.getDirection(), phaseCount);
 
 		int yOffset = 0;
 		for (int y = 0; y < currentHead.getHeight(); y++) {
@@ -35,9 +31,9 @@ public class GfxHelper {
 			}
 			yOffset++;
 		}
-		for (int y = 0; y < currentLeg.getHeight(); y++) {
+		for (int y = 0; y < currentLegs.getHeight(); y++) {
 			for (int x = 0; x < 16; x++) {
-				arGfxWhole[yOffset][x] = currentLeg.getPixel(x, y);
+				arGfxWhole[yOffset][x] = currentLegs.getPixel(x, y);
 			}
 			yOffset++;
 		}
@@ -51,23 +47,23 @@ public class GfxHelper {
 					color = ownColor2;
 				}
 				g.setColor(color);
-				g.fillRect((int) (x * zoomLevel), (int) (y * zoomLevel + yOffset), (int) zoomLevel, (int) zoomLevel);
+				g.fillRect((int) (x * zoomLevel), (int) (y * zoomLevel), (int) zoomLevel, (int) zoomLevel);
 
 				if (color.getAlpha() > 0) {
 					g.setColor(Color.BLACK);
 					if (isUpperBorder(x, y, arGfxWhole)) {
-						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel + yOffset), (int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel + yOffset));
+						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel), (int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel));
 					}
 					if (isBottomBorder(x, y, arGfxWhole)) {
-						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel + yOffset + zoomLevel), (int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel
-						        + yOffset + zoomLevel));
+						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel + zoomLevel), (int) (x * zoomLevel + zoomLevel),
+						        (int) (y * zoomLevel + zoomLevel));
 					}
 					if (isLeftBorder(x, y, arGfxWhole)) {
-						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel + yOffset), (int) (x * zoomLevel), (int) (y * zoomLevel + yOffset + zoomLevel));
+						g.drawLine((int) (x * zoomLevel), (int) (y * zoomLevel), (int) (x * zoomLevel), (int) (y * zoomLevel + zoomLevel));
 					}
 					if (isRightBorder(x, y, arGfxWhole)) {
-						g.drawLine((int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel + yOffset), (int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel
-						        + yOffset + zoomLevel));
+						g.drawLine((int) (x * zoomLevel + zoomLevel), (int) (y * zoomLevel), (int) (x * zoomLevel + zoomLevel),
+						        (int) (y * zoomLevel + zoomLevel));
 					}
 				}
 			}

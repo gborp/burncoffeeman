@@ -16,13 +16,16 @@ public class PlayerModel implements CoderDecoder {
 	boolean                  isHurt;
 	boolean                  isMagic;
 	private EnumSet<Disease> disease;
+	/** divide it with 100. transferred as short-int */
+	private int              animationPhase;
 
 	public PlayerModel() {
 		disease = EnumSet.noneOf(Disease.class);
+		speed = Constants.BOMBERMAN_BASIC_SPEED;
 	}
 
 	public byte[] code() {
-		ByteBuffer bb = ByteBuffer.allocate(1 + 2 + 2 + 7);
+		ByteBuffer bb = ByteBuffer.allocate(1 + 2 + 2 + 7 + 2);
 
 		bb.put((byte) PacketMessageType.PLAYER_MODEL.ordinal());
 
@@ -68,6 +71,8 @@ public class PlayerModel implements CoderDecoder {
 			}
 		}
 		bb.put(diseaseByte);
+
+		Helper.putShortIntToBuffer(bb, animationPhase);
 
 		if (bb.position() != bb.capacity()) {
 			throw new IllegalStateException("Error in coder: " + bb.position() + " " + bb.capacity());
@@ -118,7 +123,9 @@ public class PlayerModel implements CoderDecoder {
 			disease.add(Disease.SLOW_MOTION);
 		}
 
-		return 11;
+		animationPhase = Helper.bytesToInt(bytes[offset + 11], bytes[offset + 12]);
+
+		return 13;
 	}
 
 	public int getPlayerId() {
@@ -217,6 +224,14 @@ public class PlayerModel implements CoderDecoder {
 
 	public EnumSet<Disease> getDisease() {
 		return disease;
+	}
+
+	public int getAnimationPhase() {
+		return this.animationPhase;
+	}
+
+	public void setAnimationPhase(int animationPhase) {
+		this.animationPhase = animationPhase;
 	}
 
 }

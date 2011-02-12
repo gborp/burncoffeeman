@@ -2,23 +2,36 @@ package com.braids.burncoffeeman.client;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Collection;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import com.braids.burncoffeeman.common.Activity;
+import com.braids.burncoffeeman.common.AnimTileModel;
+import com.braids.burncoffeeman.common.AnimTilePhase;
+import com.braids.burncoffeeman.common.AnimTilePhaseType;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.Constants;
+import com.braids.burncoffeeman.common.GfxHelper;
+import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.LevelModel;
 import com.braids.burncoffeeman.common.LevelTileModel;
 import com.braids.burncoffeeman.common.PlayerModel;
 
 public class Displayer extends JPanel {
 
-	private LevelModel levelModel;
-	private Players    players;
-	private Bombs      bombs;
+	private LevelModel              levelModel;
+	private Players                 players;
+	private Bombs                   bombs;
+	private GraphicsTemplateManager gtm;
 
-	public Displayer() {}
+	public Displayer() {
+		gtm = GraphicsTemplateManager.getInstance();
+	}
 
 	public void setLevelModel(LevelModel levelModel) {
 		this.levelModel = levelModel;
@@ -70,9 +83,33 @@ public class Displayer extends JPanel {
 			int x = (int) ((playerModel.getX() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 			int y = (int) ((playerModel.getY() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 
-			g.setColor(Color.RED);
-			g.fillOval(x, y, componentSize, componentSize);
+			g.translate(x, y);
+
+			int phaseCount = playerModel.getAnimationPhase() / 100;
+
+			Activity activity = playerModel.getActivity();
+			Activity activityForGfx = getActivityForGfx(activity);
+
+			AnimTilePhase head = gtm.getAnimPhase("default", AnimTilePhaseType.HEAD, activityForGfx, playerModel.getDirection(), phaseCount);
+			AnimTilePhase body = gtm.getAnimPhase("default", AnimTilePhaseType.BODY, activityForGfx, playerModel.getDirection(), phaseCount);
+			AnimTilePhase legs = gtm.getAnimPhase("default", AnimTilePhaseType.LEGS, activityForGfx, playerModel.getDirection(), phaseCount);
+
+			GfxHelper.paintBombermanAnimPhase(g, componentSize / 16f, phaseCount, Color.RED, Color.YELLOW, head, body, legs);
+
+			g.translate(-x, -y);
+
 		}
+	}
+
+	private Activity getActivityForGfx(Activity activity) {
+		if (activity == Activity.KICKING_WITH_BOMB) {
+			activity = Activity.KICKING;
+		} else if (activity == Activity.STANDING_WITH_BOMB) {
+			activity = Activity.STANDING;
+		} else if (activity == Activity.WALKING_WITH_BOMB) {
+			activity = Activity.WALKING;
+		}
+		return activity;
 	}
 
 	private void drawTile(Graphics g, int x, int y, int componentSize, LevelTileModel tile) {
@@ -88,6 +125,17 @@ public class Displayer extends JPanel {
 				break;
 		}
 		g.fillRect(x * componentSize, y * componentSize, componentSize, componentSize);
+	}
+
+	public void addAnimTileModel(AnimTileModel data) {
+		try {
+			ByteArrayInputStream is = new ByteArrayInputStream(data.getGfx());
+			BufferedImage image = ImageIO.read(is);
+			is.close();
+			gtm.loadAnim(image, data.getGroupName(), data.getPhaseType());
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 }

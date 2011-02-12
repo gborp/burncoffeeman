@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import com.braids.burncoffeeman.common.AnimTilePhase;
 import com.braids.burncoffeeman.common.Constants;
 
 public class Editor extends JPanel {
