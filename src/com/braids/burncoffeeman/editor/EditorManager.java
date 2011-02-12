@@ -50,10 +50,6 @@ public class EditorManager {
 		lstGroupsBody = new ArrayList<String>();
 		lstGroupsLegs = new ArrayList<String>();
 
-		lstGroupsHead.add("default");
-		lstGroupsBody.add("default");
-		lstGroupsLegs.add("default");
-
 		loadAnims(new File("gfx"));
 	}
 
@@ -63,6 +59,24 @@ public class EditorManager {
 		String[] nameSegments = name.split("\\_");
 		String groupName = nameSegments[0];
 		AnimTilePhaseType phaseType = AnimTilePhaseType.valueOf(nameSegments[1]);
+
+		switch (phaseType) {
+			case HEAD:
+				if (!lstGroupsHead.contains(groupName)) {
+					lstGroupsHead.add(groupName);
+				}
+				break;
+			case BODY:
+				if (!lstGroupsBody.contains(groupName)) {
+					lstGroupsBody.add(groupName);
+				}
+				break;
+			case LEGS:
+				if (!lstGroupsLegs.contains(groupName)) {
+					lstGroupsLegs.add(groupName);
+				}
+				break;
+		}
 		try {
 			BufferedImage bi = ImageIO.read(file);
 
@@ -97,6 +111,10 @@ public class EditorManager {
 		Collections.sort(lstAnimTilePhaseBody, new AnimTilePhaseComparator());
 		Collections.sort(lstAnimTilePhaseLegs, new AnimTilePhaseComparator());
 
+		Collections.sort(lstGroupsHead);
+		Collections.sort(lstGroupsBody);
+		Collections.sort(lstGroupsLegs);
+
 		currentHead = getCreateAnimTilePhase("default", AnimTilePhaseType.HEAD, Activity.STANDING, Direction.LEFT, 1);
 		currentBody = getCreateAnimTilePhase("default", AnimTilePhaseType.BODY, Activity.STANDING, Direction.LEFT, 1);
 		currentLeg = getCreateAnimTilePhase("default", AnimTilePhaseType.LEGS, Activity.STANDING, Direction.LEFT, 1);
@@ -111,14 +129,14 @@ public class EditorManager {
 		Collections.sort(lstAnimTilePhaseBody, new AnimTilePhaseComparator());
 		Collections.sort(lstAnimTilePhaseLegs, new AnimTilePhaseComparator());
 
-		saveType(AnimTilePhaseType.HEAD, dir);
-		saveType(AnimTilePhaseType.BODY, dir);
-		saveType(AnimTilePhaseType.LEGS, dir);
+		saveType(lstGroupsHead, AnimTilePhaseType.HEAD, dir);
+		saveType(lstGroupsBody, AnimTilePhaseType.BODY, dir);
+		saveType(lstGroupsLegs, AnimTilePhaseType.LEGS, dir);
 	}
 
-	private void saveType(AnimTilePhaseType phaseType, File dir) {
+	private void saveType(List<String> lstGroup, AnimTilePhaseType phaseType, File dir) {
 		int phaseHeight = phaseType.getHeight();
-		for (String groupName : lstGroupsHead) {
+		for (String groupName : lstGroup) {
 
 			BufferedImage bi = new BufferedImage(16 * Constants.MAX_ANIM_PHASE_COUNT, phaseHeight * Direction.values().length * Activity.getNumberOfOwnGfx(),
 			        BufferedImage.TYPE_INT_ARGB);
@@ -266,6 +284,18 @@ public class EditorManager {
 
 	public void mirrorLeg() {
 		currentLeg.mirror();
+	}
+
+	public List<String> getGroupListForHead() {
+		return lstGroupsHead;
+	}
+
+	public List<String> getGroupListForBody() {
+		return lstGroupsBody;
+	}
+
+	public List<String> getGroupListForLegs() {
+		return lstGroupsLegs;
 	}
 
 }

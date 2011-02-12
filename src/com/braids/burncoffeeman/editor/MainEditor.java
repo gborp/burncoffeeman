@@ -32,6 +32,9 @@ public class MainEditor {
 	private JComboBox   cbDirection;
 	private Editor      editor;
 	private AnimPreview animPreview;
+	private JComboBox   cbGroupHead;
+	private JComboBox   cbGroupBody;
+	private JComboBox   cbGroupLegs;
 
 	public MainEditor() throws IOException {
 
@@ -58,6 +61,13 @@ public class MainEditor {
 		JPanel pnlCommands = new JPanel(new FlowLayout());
 		JButton btnSaveAll = new JButton(new SaveAllAction());
 
+		ItemListener switchAnimPhase = new ItemListener() {
+
+			public void itemStateChanged(ItemEvent e) {
+				switchAnimPhase();
+			}
+		};
+
 		spnPhase = new JSpinner(new SpinnerNumberModel(1, 1, 1, 1));
 		spnPhase.addChangeListener(new ChangeListener() {
 
@@ -74,21 +84,11 @@ public class MainEditor {
 		}
 		cbType = new JComboBox(lstAnimatedActivities.toArray());
 		cbType.setSelectedItem(Activity.STANDING);
-		cbType.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-				switchAnimPhase();
-			}
-		});
+		cbType.addItemListener(switchAnimPhase);
 
 		cbDirection = new JComboBox(Direction.values());
 		cbDirection.setSelectedItem(Direction.LEFT);
-		cbDirection.addItemListener(new ItemListener() {
-
-			public void itemStateChanged(ItemEvent e) {
-				switchAnimPhase();
-			}
-		});
+		cbDirection.addItemListener(switchAnimPhase);
 
 		pnlCommands.add(spnPhase);
 		pnlCommands.add(cbType);
@@ -96,27 +96,42 @@ public class MainEditor {
 		pnlCommands.add(new JSeparator(SwingConstants.VERTICAL));
 		pnlCommands.add(btnSaveAll);
 
+		cbGroupHead = new JComboBox(EditorManager.getInstance().getGroupListForHead().toArray());
+		cbGroupHead.setSelectedItem("default");
+		cbGroupHead.addItemListener(switchAnimPhase);
+
+		cbGroupBody = new JComboBox(EditorManager.getInstance().getGroupListForBody().toArray());
+		cbGroupBody.setSelectedItem("default");
+		cbGroupBody.addItemListener(switchAnimPhase);
+
+		cbGroupLegs = new JComboBox(EditorManager.getInstance().getGroupListForLegs().toArray());
+		cbGroupLegs.setSelectedItem("default");
+		cbGroupLegs.addItemListener(switchAnimPhase);
+
 		animPreview = new AnimPreview();
-		JPanel pnlActions = new JPanel(new FormLayout("p,2dlu,p,2dlu,p", "2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p"));
-		pnlActions.add(new JSeparator(), cc.xywh(1, 1, 5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		JPanel pnlActions = new JPanel(new FormLayout("p,2dlu,p,2dlu,p,2dlu,p", "2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p"));
+		pnlActions.add(new JSeparator(), cc.xywh(1, 1, 7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlActions.add(new JButton(new CopyHeadAction()), cc.xy(1, 2));
 		pnlActions.add(new JButton(new PasteHeadAction()), cc.xy(3, 2));
 		pnlActions.add(new JButton(new MirrorHeadAction()), cc.xy(5, 2));
+		pnlActions.add(cbGroupHead, cc.xy(7, 2));
 
-		pnlActions.add(new JSeparator(), cc.xywh(1, 3, 5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		pnlActions.add(new JSeparator(), cc.xywh(1, 3, 7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlActions.add(new JButton(new CopyBodyAction()), cc.xy(1, 4));
 		pnlActions.add(new JButton(new PasteBodyAction()), cc.xy(3, 4));
 		pnlActions.add(new JButton(new MirrorBodyAction()), cc.xy(5, 4));
+		pnlActions.add(cbGroupBody, cc.xy(7, 4));
 
-		pnlActions.add(new JSeparator(), cc.xywh(1, 5, 5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		pnlActions.add(new JSeparator(), cc.xywh(1, 5, 7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlActions.add(new JButton(new CopyLegAction()), cc.xy(1, 6));
 		pnlActions.add(new JButton(new PasteLegAction()), cc.xy(3, 6));
 		pnlActions.add(new JButton(new MirrorLegAction()), cc.xy(5, 6));
+		pnlActions.add(cbGroupLegs, cc.xy(7, 6));
 
-		pnlActions.add(new JSeparator(), cc.xywh(1, 7, 5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-		pnlActions.add(animPreview, cc.xywh(1, 8, 5, 1, CellConstraints.CENTER, CellConstraints.CENTER));
+		pnlActions.add(new JSeparator(), cc.xywh(1, 7, 7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		pnlActions.add(animPreview, cc.xywh(1, 8, 7, 1, CellConstraints.CENTER, CellConstraints.CENTER));
 
-		pnlActions.add(new JSeparator(), cc.xywh(1, 9, 5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+		pnlActions.add(new JSeparator(), cc.xywh(1, 9, 7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 		pnlActions.add(new JButton(new CopyAllAction()), cc.xy(1, 10));
 		pnlActions.add(new JButton(new PasteAllAction()), cc.xy(3, 10));
 
@@ -150,10 +165,9 @@ public class MainEditor {
 
 		EditorManager em = EditorManager.getInstance();
 
-		String group = "default";
-		em.setCurrentHead(em.getCreateAnimTilePhase(group, AnimTilePhaseType.HEAD, type, direction, phase));
-		em.setCurrentBody(em.getCreateAnimTilePhase(group, AnimTilePhaseType.BODY, type, direction, phase));
-		em.setCurrentLeg(em.getCreateAnimTilePhase(group, AnimTilePhaseType.LEGS, type, direction, phase));
+		em.setCurrentHead(em.getCreateAnimTilePhase((String) cbGroupHead.getSelectedItem(), AnimTilePhaseType.HEAD, type, direction, phase));
+		em.setCurrentBody(em.getCreateAnimTilePhase((String) cbGroupBody.getSelectedItem(), AnimTilePhaseType.BODY, type, direction, phase));
+		em.setCurrentLeg(em.getCreateAnimTilePhase((String) cbGroupLegs.getSelectedItem(), AnimTilePhaseType.LEGS, type, direction, phase));
 		editor.animChanged();
 	}
 
