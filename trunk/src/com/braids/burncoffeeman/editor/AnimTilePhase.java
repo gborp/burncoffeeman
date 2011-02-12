@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.braids.burncoffeeman.common.Activity;
+import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.Direction;
 
 public class AnimTilePhase {
@@ -75,7 +76,17 @@ public class AnimTilePhase {
 	public void loadFromBitmap(BufferedImage image, int xoffset, int yoffset) {
 		for (int y = 0; y < getHeight(); y++) {
 			for (int x = 0; x < getWidth(); x++) {
-				arGfx[y][x] = new Color(image.getRGB(x + xoffset, y + yoffset), true);
+				Color color = new Color(image.getRGB(x + xoffset, y + yoffset), true);
+				if (color.getAlpha() > 0 && color.getAlpha() < 255) {
+					if (color.getRed() == Constants.COLOR_KEY_OWN_COLOR_1.getRed() && color.getGreen() == Constants.COLOR_KEY_OWN_COLOR_1.getGreen()
+					        && color.getBlue() == Constants.COLOR_KEY_OWN_COLOR_1.getBlue()) {
+						color = Constants.COLOR_KEY_OWN_COLOR_1;
+					} else if (color.getRed() == Constants.COLOR_KEY_OWN_COLOR_2.getRed() && color.getGreen() == Constants.COLOR_KEY_OWN_COLOR_2.getGreen()
+					        && color.getBlue() == Constants.COLOR_KEY_OWN_COLOR_2.getBlue()) {
+						color = Constants.COLOR_KEY_OWN_COLOR_2;
+					}
+				}
+				arGfx[y][x] = color;
 			}
 		}
 	}
