@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 import java.io.IOException;
 
 import com.braids.burncoffeeman.common.ClientInputModel;
+import com.braids.burncoffeeman.common.ClientWantStartMatchModel;
 
 public class GameKeyListener implements KeyListener {
 
@@ -60,6 +61,11 @@ public class GameKeyListener implements KeyListener {
 			} else if (e.getKeyCode() == KeyEvent.VK_SHIFT && !clientInputModel.isAction2Press()) {
 				clientInputModel.setAction2Press(true);
 				comm.outComm(clientInputModel.code());
+			} else if (e.getKeyCode() == KeyEvent.VK_F1) {
+				ClientWantStartMatchModel cwsm = new ClientWantStartMatchModel();
+				// TODO
+				cwsm.setName("dummy");
+				comm.outComm(cwsm.code());
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();

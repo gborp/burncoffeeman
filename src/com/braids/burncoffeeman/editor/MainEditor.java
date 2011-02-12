@@ -21,6 +21,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.braids.burncoffeeman.common.Activity;
+import com.braids.burncoffeeman.common.AnimTilePhaseType;
 import com.braids.burncoffeeman.common.Direction;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;

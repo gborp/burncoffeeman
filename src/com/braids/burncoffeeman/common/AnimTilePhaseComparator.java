@@ -1,4 +1,4 @@
-package com.braids.burncoffeeman.editor;
+package com.braids.burncoffeeman.common;
 
 import java.util.Comparator;
 

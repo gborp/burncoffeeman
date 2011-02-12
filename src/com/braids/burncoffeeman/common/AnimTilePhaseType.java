@@ -1,4 +1,4 @@
-package com.braids.burncoffeeman.editor;
+package com.braids.burncoffeeman.common;
 
 public enum AnimTilePhaseType {
 	HEAD(8), BODY(4), LEGS(4);
