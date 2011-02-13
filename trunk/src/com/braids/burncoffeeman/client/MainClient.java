@@ -1,6 +1,5 @@
 package com.braids.burncoffeeman.client;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.Timer;
@@ -16,6 +15,8 @@ import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.LevelModel;
 import com.braids.burncoffeeman.common.PlayerInfoModel;
 import com.braids.burncoffeeman.common.PlayerModel;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class MainClient {
 
@@ -38,7 +39,10 @@ public class MainClient {
 
 		new RepeatingReleasedEventsFixer().install();
 
-		JFrame frame = new JFrame();
+		CellConstraints cc = new CellConstraints();
+
+		JFrame frame = new JFrame("Burn Coffeeman");
+		frame.setLayout(new FormLayout("f:100dlu:g", "f:100dlu:g"));
 
 		displayer = new Displayer();
 		displayer.setLevelModel(levelModel);
@@ -46,8 +50,7 @@ public class MainClient {
 		displayer.setBombs(bombs);
 		displayer.setFocusable(true);
 
-		frame.setLayout(new BorderLayout());
-		frame.add(displayer, BorderLayout.CENTER);
+		frame.add(displayer, cc.xy(1, 1));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);

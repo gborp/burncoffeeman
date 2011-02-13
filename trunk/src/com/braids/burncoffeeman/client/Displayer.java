@@ -55,7 +55,13 @@ public class Displayer extends JPanel {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
-		int componentSize = 32;
+		float componentWidth = getWidth() / levelModel.getWidth();
+		float componentHeight = getHeight() / levelModel.getHeight();
+
+		float componentSize = Math.min(componentWidth, componentHeight);
+		int virtualSize = Constants.COMPONENT_SIZE_IN_VIRTUAL;
+		float divider = virtualSize / componentSize;
+
 		for (int y = 0; y < levelModel.getHeight(); y++) {
 			for (int x = 0; x < levelModel.getWidth(); x++) {
 				LevelTileModel tile = levelModel.getTile(x, y);
@@ -65,16 +71,13 @@ public class Displayer extends JPanel {
 			}
 		}
 
-		int virtualSize = Constants.COMPONENT_SIZE_IN_VIRTUAL;
-		float divider = virtualSize / componentSize;
-
 		Collection<BombModel> lstBombs = bombs.getBombModels();
 		for (BombModel b : lstBombs) {
 			int x = (int) ((b.getX() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 			int y = (int) ((b.getY() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 
 			g.setColor(Color.BLACK);
-			g.fillOval(x, y, componentSize, componentSize);
+			g.fillOval(x, y, (int) componentSize, (int) componentSize);
 		}
 
 		Collection<PlayerModel> lstPlayers = players.getPlayerModels();
@@ -112,7 +115,7 @@ public class Displayer extends JPanel {
 		return activity;
 	}
 
-	private void drawTile(Graphics g, int x, int y, int componentSize, LevelTileModel tile) {
+	private void drawTile(Graphics g, int x, int y, float componentSize, LevelTileModel tile) {
 		switch (tile.getWall()) {
 			case GROUND:
 				g.setColor(Color.GREEN);
@@ -124,7 +127,7 @@ public class Displayer extends JPanel {
 				g.setColor(Color.BLUE);
 				break;
 		}
-		g.fillRect(x * componentSize, y * componentSize, componentSize, componentSize);
+		g.fillRect((int) (x * componentSize), (int) (y * componentSize), (int) componentSize, (int) componentSize);
 	}
 
 	public void addAnimTileModel(AnimTileModel data) {
