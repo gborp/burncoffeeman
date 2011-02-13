@@ -295,12 +295,19 @@ public class Player {
 		}
 	}
 
+	private void setActivity(Activity activity) {
+		if (model.getActivity() != activity) {
+			stateChanged = true;
+			model.setActivity(activity);
+		}
+	}
+
 	private void processActionsAndHandleActivityTransitions() {
 		switch (model.getActivity()) {
 
 			case STANDING:
 				if (isDirectionKeyPressed()) {
-					model.setActivity(Activity.WALKING);
+					setActivity(Activity.WALKING);
 				}
 				if (clientInput.isAction1Press()) {
 					handleFunction1WithoutBomb();
@@ -314,7 +321,7 @@ public class Player {
 
 			case STANDING_WITH_BOMB:
 				if (isDirectionKeyPressed()) {
-					model.setActivity(Activity.WALKING_WITH_BOMB);
+					setActivity(Activity.WALKING_WITH_BOMB);
 				}
 				if (!clientInput.isAction1Press()) {
 					throwBombAway();
@@ -323,7 +330,7 @@ public class Player {
 
 			case WALKING:
 				if (!isDirectionKeyPressed()) {
-					model.setActivity(Activity.STANDING);
+					setActivity(Activity.STANDING);
 				}
 				if (clientInput.isAction1Press() && !prevClientInput.isAction1Press()) {
 					handleFunction1WithoutBomb();
@@ -334,7 +341,7 @@ public class Player {
 
 			case WALKING_WITH_BOMB:
 				if (!isDirectionKeyPressed()) {
-					model.setActivity(Activity.STANDING_WITH_BOMB);
+					setActivity(Activity.STANDING_WITH_BOMB);
 				}
 				if (!clientInput.isAction1Press()) {
 					throwBombAway();
@@ -343,25 +350,25 @@ public class Player {
 
 			case KICKING:
 				if (getIterationCounter() == Activity.KICKING.activityIterations - 1) {
-					model.setActivity(isDirectionKeyPressed() ? Activity.WALKING : Activity.STANDING);
+					setActivity(isDirectionKeyPressed() ? Activity.WALKING : Activity.STANDING);
 				}
 				break;
 
 			case KICKING_WITH_BOMB:
 				if (getIterationCounter() == Activity.KICKING_WITH_BOMB.activityIterations - 1) {
-					model.setActivity(isDirectionKeyPressed() ? Activity.WALKING_WITH_BOMB : Activity.STANDING_WITH_BOMB);
+					setActivity(isDirectionKeyPressed() ? Activity.WALKING_WITH_BOMB : Activity.STANDING_WITH_BOMB);
 				}
 				break;
 
 			case PUNCHING:
 				if (getIterationCounter() == Activity.PUNCHING.activityIterations - 1) {
-					model.setActivity(isDirectionKeyPressed() ? Activity.WALKING : Activity.STANDING);
+					setActivity(isDirectionKeyPressed() ? Activity.WALKING : Activity.STANDING);
 				}
 				break;
 
 			case PICKING_UP:
 				if (getIterationCounter() == Activity.PICKING_UP.activityIterations - 1) {
-					model.setActivity(isDirectionKeyPressed() ? Activity.WALKING_WITH_BOMB : Activity.STANDING_WITH_BOMB);
+					setActivity(isDirectionKeyPressed() ? Activity.WALKING_WITH_BOMB : Activity.STANDING_WITH_BOMB);
 				}
 				break;
 
@@ -510,7 +517,7 @@ public class Player {
 				}
 				pickedUpBomb = bombAtPos;
 				gameManager.removeBomb(bombAtPos);
-				model.setActivity(Activity.PICKING_UP);
+				setActivity(Activity.PICKING_UP);
 				return;
 			}
 			// if (model.hasNonAccumItem(Items.BOMB_SPRINKLE)) {
@@ -590,7 +597,7 @@ public class Player {
 		gameManager.addBomb(pickedUpBomb);
 		pickedUpBomb = null;
 
-		model.setActivity(model.getActivity() == Activity.STANDING_WITH_BOMB ? Activity.STANDING : Activity.WALKING);
+		setActivity(model.getActivity() == Activity.STANDING_WITH_BOMB ? Activity.STANDING : Activity.WALKING);
 	}
 
 	public void cycle() {
