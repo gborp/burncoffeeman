@@ -85,7 +85,7 @@ public class Displayer extends JPanel {
 
 			g.translate(x, y);
 
-			int phaseCount = playerModel.getAnimationPhase() / 100;
+			int phaseCount = playerModel.getAnimationPhase() / 640;
 
 			Activity activity = playerModel.getActivity();
 			Activity activityForGfx = getActivityForGfx(activity);
