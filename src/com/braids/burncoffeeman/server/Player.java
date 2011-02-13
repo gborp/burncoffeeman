@@ -600,6 +600,56 @@ public class Player {
 		setActivity(model.getActivity() == Activity.STANDING_WITH_BOMB ? Activity.STANDING : Activity.WALKING);
 	}
 
+	// /**
+	// * Tries to kick.
+	// */
+	// private void tryToKick() {
+	// final int componentPosXAhead = model.getComponentPosX() +
+	// model.getDirectionXMultiplier();
+	// final int componentPosYAhead = model.getComponentPosY() +
+	// model.getDirectionYMultiplier();
+	//
+	// final Integer bombIndexAhead =
+	// gameCoreHandler.getBombIndexAtComponentPosition(componentPosXAhead,
+	// componentPosYAhead);
+	// if (bombIndexAhead == null) {
+	// return;
+	// }
+	//
+	// final BombModel bombModel =
+	// gameCoreHandler.getBombModels().get(bombIndexAhead);
+	//
+	// final int componentPosXAheadAhead = componentPosXAhead +
+	// model.getDirectionXMultiplier();
+	// final int componentPosYAheadAhead = componentPosYAhead +
+	// model.getDirectionYMultiplier();
+	//
+	// if (!gameCoreHandler.canBombRollToComponentPosition(bombModel,
+	// componentPosXAheadAhead, componentPosYAheadAhead)) {
+	// return;
+	// }
+	//
+	// // Activity can be PUNCHING!!!!
+	// model.setActivity(model.getActivity() == Activities.WALKING_WITH_BOMB ?
+	// Activities.KICKING_WITH_BOMB : Activities.KICKING);
+	// bombModel.setPhase(BombPhases.ROLLING);
+	// bombModel.setDirection(model.getDirection()); // We punch in our
+	// // direction
+	// if (getModel().hasNonAccumItem(Items.CRAZY_BOOTS)) {
+	// bombModel.setCrazyPercent(0.2f);
+	// } else {
+	// bombModel.setCrazyPercent(0);
+	// }
+	//
+	// // We align the bomb to the center based on the kicking direction
+	// if (bombModel.getDirectionXMultiplier() != 0) {
+	// bombModel.alignPosYToComponentCenter();
+	// }
+	// if (bombModel.getDirectionYMultiplier() != 0) {
+	// bombModel.alignPosXToComponentCenter();
+	// }
+	// }
+
 	public void cycle() {
 		stateChanged = false;
 

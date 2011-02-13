@@ -12,7 +12,9 @@ import java.util.TimerTask;
 
 import com.braids.burncoffeeman.common.AnimTileModel;
 import com.braids.burncoffeeman.common.AnimTilePhaseType;
+import com.braids.burncoffeeman.common.BombPhases;
 import com.braids.burncoffeeman.common.Constants;
+import com.braids.burncoffeeman.common.Direction;
 import com.braids.burncoffeeman.common.Fire;
 import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.Helper;
@@ -198,6 +200,8 @@ public class GameManager {
 			bomb.cycle();
 		}
 
+		checkAndHandleBombDetonations();
+
 		sendMapSegment();
 		for (Player player : lstPlayers) {
 			if (player.isStateChanged()) {
@@ -210,6 +214,104 @@ public class GameManager {
 			}
 		}
 
+	}
+
+	private void checkAndHandleBombDetonations() {
+		ArrayList<Bomb> detonatableBombModels = new ArrayList<Bomb>();
+		boolean checkedAllBombModels;
+
+		// First we check the fire triggered bombs...
+		for (Bomb bomb : lstBomb) {
+			LevelTileModel tile = levelModel.getTile(bomb.getComponentPosX(), bomb.getComponentPosY());
+			if ((bomb.getPhase() != BombPhases.FLYING) && !bomb.isAboutToDetonate() && tile.hasFire()) {
+				bomb.setPhase(BombPhases.ABOUT_TO_DETONATE);
+				bomb.setTriggererPlayer(tile.getFireOwnerId());
+			}
+		}
+		do {
+			checkedAllBombModels = true;
+			// The fact that we didn't check all of 'em will be known if we find
+			// one that hasn't been checked out yet.
+
+			for (Bomb bomb : lstBomb) {
+				if (!bomb.isDetonated() && bomb.isAboutToDetonate()) {
+					bomb.setTriggererPlayer(bomb.getBombOwnerId());
+					detonatableBombModels.add(bomb);
+					checkedAllBombModels = false;
+					break;
+				}
+			}
+
+			for (int i = 0; i < detonatableBombModels.size(); i++) {
+				Bomb detonatedBombModel = detonatableBombModels.get(i);
+				int detonatedBombComponentPosX = detonatedBombModel.getComponentPosX();
+				int detonatedBombComponentPosY = detonatedBombModel.getComponentPosY();
+
+				LevelTileModel tile = levelModel.getTile(detonatedBombComponentPosX, detonatedBombComponentPosY);
+				tile.setFire(Fire.CROSSING);
+				tile.setFireOwnerId(detonatedBombModel.getTriggererPlayer());
+
+				for (Direction direction : Direction.values()) {
+					for (int range = 1; range < detonatedBombModel.getRange(); range++) {
+						if (detonatedBombModel.isExcludedDetonationDirection(direction)) {
+							break;
+						}
+
+						int componentPosX = detonatedBombComponentPosX + direction.getXMultiplier() * range;
+						int componentPosY = detonatedBombComponentPosY + direction.getYMultiplier() * range;
+
+						if ((componentPosX < 0) || (componentPosX > levelModel.getWidth() - 1) || (componentPosY < 0)
+						        || (componentPosY > levelModel.getHeight() - 1)) {
+							break;
+						}
+						LevelTileModel levelComponent = levelModel.getTile(componentPosX, componentPosY);
+
+						if (levelComponent.getWall() != Wall.GROUND && levelComponent.getWall() != Wall.BREAKABLE_WALL) {
+							break;
+						}
+
+						Bomb bombModelAtComponentPos = getBombAtComponentPosition(componentPosX, componentPosY);
+
+						if (bombModelAtComponentPos != null) {
+							bombModelAtComponentPos.addExcludedDetonationDirection(direction.getOpposite());
+							if (!bombModelAtComponentPos.isDetonated() && !detonatableBombModels.contains(bombModelAtComponentPos)) {
+								bombModelAtComponentPos.setTriggererPlayer(detonatedBombModel.getTriggererPlayer());
+								detonatableBombModels.add(bombModelAtComponentPos);
+							}
+							break;
+						} else {
+							// Now here we can set the fire...
+							tile.setFire(direction.getXMultiplier() != 0 ? Fire.HORIZONTAL : Fire.VERTICAL);
+
+							tile.setFireOwnerId(detonatedBombModel.getTriggererPlayer());
+
+							if ((levelComponent.getWall() == Wall.BREAKABLE_WALL)
+							        || ((levelComponent.getWall() == Wall.GROUND) && (levelComponent.getItem() != null))) {
+								break;
+							}
+						}
+					}
+				}
+
+				detonatedBombModel.setPhase(BombPhases.DETONATED);
+			}
+
+			detonatableBombModels.clear();
+
+		} while (!checkedAllBombModels);
+
+		for (int i = lstBomb.size() - 1; i >= 0; i--) {
+			Bomb bomb = lstBomb.get(i);
+			if (bomb.isDetonated()) {
+				if (bomb.getBombOwnerId() != -1) {
+					// TODO
+					// bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB,
+					// bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+					// .get(Items.BOMB) + 1);
+				}
+				lstBomb.remove(i);
+			}
+		}
 	}
 
 	private void gameOverCycle() {}

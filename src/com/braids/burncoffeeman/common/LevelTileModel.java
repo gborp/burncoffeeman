@@ -9,7 +9,7 @@ public class LevelTileModel implements CoderDecoder {
 	Item item;
 	Wall wall;
 	Fire fire;
-	byte fireOwnerId;
+	int  fireOwnerId;
 
 	public byte[] code() {
 		ByteBuffer bb = ByteBuffer.allocate(1 + 6);
@@ -21,7 +21,7 @@ public class LevelTileModel implements CoderDecoder {
 		bb.put((byte) item.ordinal());
 		bb.put((byte) wall.ordinal());
 		bb.put((byte) fire.ordinal());
-		bb.put(fireOwnerId);
+		bb.put((byte) fireOwnerId);
 		return bb.array();
 	}
 
@@ -76,12 +76,16 @@ public class LevelTileModel implements CoderDecoder {
 		this.fire = fire;
 	}
 
-	public byte getFireOwnerId() {
+	public int getFireOwnerId() {
 		return this.fireOwnerId;
 	}
 
-	public void setFireOwnerId(byte fireOwnerId) {
+	public void setFireOwnerId(int fireOwnerId) {
 		this.fireOwnerId = fireOwnerId;
+	}
+
+	public boolean hasFire() {
+		return fire != Fire.NONE;
 	}
 
 }
