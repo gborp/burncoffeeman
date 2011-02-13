@@ -59,6 +59,9 @@ public class Displayer extends JPanel {
 		float componentHeight = getHeight() / levelModel.getHeight();
 
 		float componentSize = Math.min(componentWidth, componentHeight);
+
+		g.translate((int) (getWidth() - componentSize * levelModel.getWidth()) / 2, (int) (getHeight() - componentSize * levelModel.getHeight()) / 2);
+
 		int virtualSize = Constants.COMPONENT_SIZE_IN_VIRTUAL;
 		float divider = virtualSize / componentSize;
 
