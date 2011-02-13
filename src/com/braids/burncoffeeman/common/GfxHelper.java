@@ -2,11 +2,18 @@ package com.braids.burncoffeeman.common;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class GfxHelper {
 
 	public static void paintBombermanAnimPhase(Graphics g, float zoomLevel, int phaseCount, Color ownColor1, Color ownColor2, AnimTilePhase currentHead,
 	        AnimTilePhase currentBody, AnimTilePhase currentLegs) {
+
+		Graphics2D g2d = (Graphics2D) g;
+
+		g2d.scale(zoomLevel / 4, zoomLevel / 4);
+
+		zoomLevel = 4;
 
 		Color[][] arGfxWhole = new Color[16][16];
 
