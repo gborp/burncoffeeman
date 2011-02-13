@@ -40,4 +40,7 @@ public class Constants {
 	public static final int     MAX_BOMB_ID                             = 256 * 256 - 2;
 
 	public static final int     BOMB_FLYING_DISTANCE                    = LEVEL_COMPONENT_GRANULARITY * 3;
+
+	/** Number of iterations of a bomb detonation (time until a bomb detonates). */
+	public static final int     BOMB_DETONATION_ITERATIONS              = 60;
 }

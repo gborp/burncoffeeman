@@ -1,19 +1,26 @@
 package com.braids.burncoffeeman.server;
 
+import java.util.EnumSet;
+
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.BombPhases;
 import com.braids.burncoffeeman.common.BombType;
+import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.Direction;
 
 public class Bomb {
 
-	private BombModel  model;
-	private boolean    firstCycle;
-	private boolean    stateChanged;
-	private Direction  direction;
-	private BombPhases phase;
-	private int        flyingTargetX;
-	private int        flyingTargetY;
+	private BombModel          model;
+	private boolean            firstCycle;
+	private boolean            stateChanged;
+	private Direction          direction;
+	private BombPhases         phase;
+	private int                flyingTargetX;
+	private int                flyingTargetY;
+	/** -1: don't tick */
+	private int                tickingCountdown;
+	private int                triggerPlayer;
+	private EnumSet<Direction> setExcludedDirection;
 
 	public Bomb(int playerId, int x, int y, int range) {
 		model = new BombModel();
@@ -23,6 +30,8 @@ public class Bomb {
 		model.setX(x);
 		model.setY(y);
 		model.setRange(range);
+		setPhase(BombPhases.STANDING);
+		setExcludedDirection = EnumSet.noneOf(Direction.class);
 
 		firstCycle = true;
 	}
@@ -82,6 +91,15 @@ public class Bomb {
 			firstCycle = false;
 			stateChanged = true;
 		}
+
+		if (phase == BombPhases.ROLLING || phase == BombPhases.STANDING) {
+			if (tickingCountdown == 0) {
+				setPhase(BombPhases.ABOUT_TO_DETONATE);
+				tickingCountdown--;
+			} else if (tickingCountdown > 0) {
+				tickingCountdown--;
+			}
+		}
 	}
 
 	public byte[] getCodedModel() {
@@ -97,7 +115,13 @@ public class Bomb {
 	}
 
 	public void setPhase(BombPhases phase) {
-		this.phase = phase;
+		if (this.phase != phase) {
+			stateChanged = true;
+			this.phase = phase;
+			if (phase == BombPhases.FLYING) {
+				tickingCountdown = -1;
+			}
+		}
 	}
 
 	public Direction getDirection() {
@@ -143,4 +167,41 @@ public class Bomb {
 			return 0;
 		}
 	}
+
+	public int getComponentPosX() {
+		return model.getX() / Constants.LEVEL_COMPONENT_GRANULARITY;
+	}
+
+	public int getComponentPosY() {
+		return model.getY() / Constants.LEVEL_COMPONENT_GRANULARITY;
+	}
+
+	public boolean isAboutToDetonate() {
+		return phase == BombPhases.ABOUT_TO_DETONATE;
+	}
+
+	public boolean isDetonated() {
+		return phase == BombPhases.DETONATED;
+	}
+
+	public void setTriggererPlayer(int triggerPlayer) {
+		this.triggerPlayer = triggerPlayer;
+	}
+
+	public int getTriggererPlayer() {
+		return triggerPlayer;
+	}
+
+	public int getRange() {
+		return model.getRange();
+	}
+
+	public void addExcludedDetonationDirection(Direction direction) {
+		setExcludedDirection.add(direction);
+	}
+
+	public boolean isExcludedDetonationDirection(Direction direction) {
+		return setExcludedDirection.contains(direction);
+	}
+
 }
