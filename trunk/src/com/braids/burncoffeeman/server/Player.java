@@ -309,9 +309,9 @@ public class Player {
 				if (isDirectionKeyPressed()) {
 					setActivity(Activity.WALKING);
 				}
-				if (clientInput.isAction1Press()) {
-					handleFunction1WithoutBomb();
-				}
+				// if (clientInput.isAction1Press()) {
+				// handleFunction1WithoutBomb();
+				// }
 				if (clientInput.isAction1Press() && !prevClientInput.isAction1Press()) {
 					handleFunction1WithoutBomb();
 				} else if (clientInput.isAction2Press() && !prevClientInput.isAction2Press()) {

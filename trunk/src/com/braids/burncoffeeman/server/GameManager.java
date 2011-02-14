@@ -214,6 +214,19 @@ public class GameManager {
 			}
 		}
 
+		for (int i = lstBomb.size() - 1; i >= 0; i--) {
+			Bomb bomb = lstBomb.get(i);
+			if (bomb.isDetonated()) {
+				if (bomb.getBombOwnerId() != -1) {
+					// TODO
+					// bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB,
+					// bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
+					// .get(Items.BOMB) + 1);
+				}
+				lstBomb.remove(i);
+			}
+		}
+
 	}
 
 	private void checkAndHandleBombDetonations() {
@@ -299,19 +312,6 @@ public class GameManager {
 			detonatableBombModels.clear();
 
 		} while (!checkedAllBombModels);
-
-		for (int i = lstBomb.size() - 1; i >= 0; i--) {
-			Bomb bomb = lstBomb.get(i);
-			if (bomb.isDetonated()) {
-				if (bomb.getBombOwnerId() != -1) {
-					// TODO
-					// bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap.put(Items.BOMB,
-					// bombModel.getOwnerPlayer().accumulateableItemQuantitiesMap
-					// .get(Items.BOMB) + 1);
-				}
-				lstBomb.remove(i);
-			}
-		}
 	}
 
 	private void gameOverCycle() {}
