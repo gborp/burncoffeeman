@@ -119,7 +119,9 @@ public class Bomb {
 			stateChanged = true;
 			this.phase = phase;
 			if (phase == BombPhases.FLYING) {
-				tickingCountdown = -1;
+				// tickingCountdown = -1;
+			} else if (phase == BombPhases.DETONATED) {
+				model.setType(BombType.REMOVE);
 			}
 		}
 	}
