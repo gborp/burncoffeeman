@@ -30,6 +30,7 @@ public class MainClient {
 	public MainClient() throws IOException {
 
 		GraphicsTemplateManager.init();
+		GraphicsTemplateManager.getInstance().loadTiles();
 
 		levelModel = new LevelModel(Constants.LEVEL_WIDTH, Constants.LEVEL_HEIGHT);
 		players = new Players();
