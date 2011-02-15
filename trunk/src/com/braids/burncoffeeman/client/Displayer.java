@@ -12,11 +12,8 @@ import javax.swing.JPanel;
 
 import com.braids.burncoffeeman.common.Activity;
 import com.braids.burncoffeeman.common.AnimTileModel;
-import com.braids.burncoffeeman.common.AnimTilePhase;
-import com.braids.burncoffeeman.common.AnimTilePhaseType;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.Constants;
-import com.braids.burncoffeeman.common.GfxHelper;
 import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.LevelModel;
 import com.braids.burncoffeeman.common.LevelTileModel;
@@ -55,12 +52,12 @@ public class Displayer extends JPanel {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
-		float componentWidth = getWidth() / levelModel.getWidth();
-		float componentHeight = getHeight() / levelModel.getHeight();
+		int componentWidth = getWidth() / levelModel.getWidth();
+		int componentHeight = getHeight() / levelModel.getHeight();
 
-		float componentSize = Math.min(componentWidth, componentHeight);
+		int componentSize = Math.min(componentWidth, componentHeight);
 
-		g.translate((int) (getWidth() - componentSize * levelModel.getWidth()) / 2, (int) (getHeight() - componentSize * levelModel.getHeight()) / 2);
+		g.translate((getWidth() - componentSize * levelModel.getWidth()) / 2, (getHeight() - componentSize * levelModel.getHeight()) / 2);
 
 		int virtualSize = Constants.COMPONENT_SIZE_IN_VIRTUAL;
 		float divider = virtualSize / componentSize;
@@ -80,7 +77,7 @@ public class Displayer extends JPanel {
 			int y = (int) ((b.getY() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 
 			g.setColor(Color.BLACK);
-			g.fillOval(x, y, (int) componentSize, (int) componentSize);
+			g.fillOval(x, y, componentSize, componentSize);
 		}
 
 		Collection<PlayerModel> lstPlayers = players.getPlayerModels();
@@ -89,21 +86,14 @@ public class Displayer extends JPanel {
 			int x = (int) ((playerModel.getX() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 			int y = (int) ((playerModel.getY() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 
-			g.translate(x, y);
-
 			int phaseCount = playerModel.getAnimationPhase() / 640;
 
 			Activity activity = playerModel.getActivity();
 			Activity activityForGfx = getActivityForGfx(activity);
 
-			AnimTilePhase head = gtm.getAnimPhase("default", AnimTilePhaseType.HEAD, activityForGfx, playerModel.getDirection(), phaseCount);
-			AnimTilePhase body = gtm.getAnimPhase("default", AnimTilePhaseType.BODY, activityForGfx, playerModel.getDirection(), phaseCount);
-			AnimTilePhase legs = gtm.getAnimPhase("default", AnimTilePhaseType.LEGS, activityForGfx, playerModel.getDirection(), phaseCount);
-
-			GfxHelper.paintBombermanAnimPhase(g, componentSize / 16f, phaseCount, Color.RED, Color.YELLOW, head, body, legs);
-
-			g.translate(-x, -y);
-
+			BufferedImage playerGfx = ScaledGfxHelper.getPlayer(componentSize, Color.RED, Color.YELLOW, "default", activityForGfx, playerModel.getDirection(),
+			        phaseCount);
+			g.drawImage(playerGfx, x, y, null);
 		}
 	}
 

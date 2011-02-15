@@ -63,9 +63,8 @@ public class GraphicsTemplateManager {
 
 	public void loadAnimOriginals(File dir) {
 		for (File file : dir.listFiles()) {
-			if (file.isFile() && !file.isHidden() && file.getName().endsWith(".png")) {
+			if (file.isFile() && !file.isHidden() && file.getName().endsWith(".png") && file.getName().contains("_")) {
 				try {
-
 					String name = file.getName();
 					name = name.substring(0, name.length() - ".png".length());
 					String[] nameSegments = name.split("\\_");
@@ -287,5 +286,16 @@ public class GraphicsTemplateManager {
 
 	public List<String> getGroupListForLegs() {
 		return lstGroupsLegs;
+	}
+
+	public void loadTiles() throws IOException {
+		loadFire();
+
+	}
+
+	private void loadFire() throws IOException {
+		BufferedImage image = ImageIO.read(new File("gfx/tile-fire.png"));
+		// image.
+
 	}
 }
