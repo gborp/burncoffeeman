@@ -26,8 +26,8 @@ public class Constants {
 
 	public static final int     COMPONENT_SIZE_IN_VIRTUAL               = 1155;
 
-	public static final int     SEND_MAP_SEGMENT_PACKET_SIZE            = 1;
-	public static final int     SEND_MAP_SEGMENT_BOOST_PACKET_SIZE      = 20;
+	public static final int     SEND_MAP_SEGMENT_PACKET_SIZE            = 50;
+	public static final int     SEND_MAP_SEGMENT_BOOST_PACKET_SIZE      = 50;
 
 	public static final int     MOVEMENT_CORRECTION_SENSITIVITY         = 85;
 
@@ -40,7 +40,11 @@ public class Constants {
 	public static final int     MAX_BOMB_ID                             = 256 * 256 - 2;
 
 	public static final int     BOMB_FLYING_DISTANCE                    = LEVEL_COMPONENT_GRANULARITY * 3;
+	public static final int     BOMB_FLYING_SPEED                       = LEVEL_COMPONENT_GRANULARITY / 5;
+	public static final int     BOMB_ROLLING_SPEED                      = LEVEL_COMPONENT_GRANULARITY / 5;
 
 	/** Number of iterations of a bomb detonation (time until a bomb detonates). */
 	public static final int     BOMB_DETONATION_ITERATIONS              = 60;
+
+	public static final int     FIRE_TIMOUT                             = 20;
 }

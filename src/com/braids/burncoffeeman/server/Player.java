@@ -92,11 +92,11 @@ public class Player {
 		processOutput.append(data);
 	}
 
-	private int getComponentPosX() {
+	public int getComponentPosX() {
 		return model.getX() / Constants.LEVEL_COMPONENT_GRANULARITY;
 	}
 
-	private int getComponentPosY() {
+	public int getComponentPosY() {
 		return model.getY() / Constants.LEVEL_COMPONENT_GRANULARITY;
 	}
 
@@ -295,6 +295,10 @@ public class Player {
 		}
 	}
 
+	public Activity getActivity() {
+		return model.getActivity();
+	}
+
 	private void setActivity(Activity activity) {
 		if (model.getActivity() != activity) {
 			stateChanged = true;
@@ -471,6 +475,10 @@ public class Player {
 		}
 	}
 
+	public Direction getDirection() {
+		return model.getDirection();
+	}
+
 	private boolean hasBlueGloves() {
 		return true;
 	}
@@ -500,7 +508,7 @@ public class Player {
 		int playerComponentPosY = getComponentPosY();
 		int componentPosX = playerComponentPosX;
 		int componentPosY = playerComponentPosY;
-		int maxPlacableBombs = 4;
+		int maxPlacableBombs = 1;
 
 		LevelTileModel tile = gameManager.getLevelModel().getTile(componentPosX, componentPosY);
 
@@ -552,13 +560,14 @@ public class Player {
 			// int bombRange = model.hasNonAccumItem(Items.SUPER_FIRE) ?
 			// CoreConsts.SUPER_FIRE_RANGE :
 			// model.accumulateableItemQuantitiesMap.get(Items.FIRE) + 1;
-			int bombRange = 3;
+			int bombRange = 4;
 
 			// if (model.getOwnedDiseases().containsKey(Diseases.SHORT_RANGE)) {
 			// bombRange = 2;
 			// }
 
-			gameManager.addBomb(new Bomb(model.getPlayerId(), Helper.getCenterOfTileX(componentPosX), Helper.getCenterOfTileX(componentPosY), bombRange));
+			gameManager.addBomb(new Bomb(model.getPlayerId(), Helper.getCenterOfTileX(componentPosX), Helper.getCenterOfTileX(componentPosY), bombRange,
+			        getDirection()));
 
 			// if (hasNonAccumItem(Items.JELLY)) {
 			// newBombModel.setType(BombTypes.JELLY);
@@ -654,8 +663,8 @@ public class Player {
 		stateChanged = false;
 
 		ClientInputModel newClientInput = getClientInput();
+		prevClientInput = clientInput;
 		if (newClientInput != null) {
-			prevClientInput = clientInput;
 			clientInput = newClientInput;
 		}
 		processActionsAndHandleActivityTransitions();
@@ -704,4 +713,5 @@ public class Player {
 	public String getGfxLegsGroup() {
 		return playerInfo.getGfxLegsGroup();
 	}
+
 }

@@ -4,12 +4,14 @@ import java.nio.ByteBuffer;
 
 public class LevelTileModel implements CoderDecoder {
 
-	byte x;
-	byte y;
-	Item item;
-	Wall wall;
-	Fire fire;
-	int  fireOwnerId;
+	private byte x;
+	private byte y;
+	private Item item;
+	private Wall wall;
+	private Fire fire;
+	private int  fireOwnerId;
+	// not serializable
+	private int  fireTimeout;
 
 	public byte[] code() {
 		ByteBuffer bb = ByteBuffer.allocate(1 + 6);
@@ -73,6 +75,9 @@ public class LevelTileModel implements CoderDecoder {
 	}
 
 	public void setFire(Fire fire) {
+		if (fire != Fire.NONE) {
+			fireTimeout = Constants.FIRE_TIMOUT;
+		}
 		this.fire = fire;
 	}
 
@@ -88,4 +93,12 @@ public class LevelTileModel implements CoderDecoder {
 		return fire != Fire.NONE;
 	}
 
+	public void cycle() {
+		if (hasFire()) {
+			fireTimeout--;
+			if (fireTimeout < 0) {
+				fire = Fire.NONE;
+			}
+		}
+	}
 }

@@ -121,7 +121,11 @@ public class Displayer extends JPanel {
 	private void drawTile(Graphics g, int x, int y, float componentSize, LevelTileModel tile) {
 		switch (tile.getWall()) {
 			case GROUND:
-				g.setColor(Color.GREEN);
+				if (tile.hasFire()) {
+					g.setColor(Color.YELLOW);
+				} else {
+					g.setColor(Color.GREEN);
+				}
 				break;
 			case WALL:
 				g.setColor(Color.DARK_GRAY);

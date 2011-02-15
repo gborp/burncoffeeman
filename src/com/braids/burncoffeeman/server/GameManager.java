@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.braids.burncoffeeman.common.Activity;
 import com.braids.burncoffeeman.common.AnimTileModel;
 import com.braids.burncoffeeman.common.AnimTilePhaseType;
 import com.braids.burncoffeeman.common.BombPhases;
@@ -201,6 +202,7 @@ public class GameManager {
 		}
 
 		checkAndHandleBombDetonations();
+		levelModel.cycle();
 
 		sendMapSegment();
 		for (Player player : lstPlayers) {
@@ -260,9 +262,9 @@ public class GameManager {
 				int detonatedBombComponentPosX = detonatedBombModel.getComponentPosX();
 				int detonatedBombComponentPosY = detonatedBombModel.getComponentPosY();
 
-				LevelTileModel tile = levelModel.getTile(detonatedBombComponentPosX, detonatedBombComponentPosY);
-				tile.setFire(Fire.CROSSING);
-				tile.setFireOwnerId(detonatedBombModel.getTriggererPlayer());
+				LevelTileModel tileCross = levelModel.getTile(detonatedBombComponentPosX, detonatedBombComponentPosY);
+				tileCross.setFire(Fire.CROSSING);
+				tileCross.setFireOwnerId(detonatedBombModel.getTriggererPlayer());
 
 				for (Direction direction : Direction.values()) {
 					for (int range = 1; range < detonatedBombModel.getRange(); range++) {
@@ -277,9 +279,9 @@ public class GameManager {
 						        || (componentPosY > levelModel.getHeight() - 1)) {
 							break;
 						}
-						LevelTileModel levelComponent = levelModel.getTile(componentPosX, componentPosY);
+						LevelTileModel tile = levelModel.getTile(componentPosX, componentPosY);
 
-						if (levelComponent.getWall() != Wall.GROUND && levelComponent.getWall() != Wall.BREAKABLE_WALL) {
+						if (tile.getWall() != Wall.GROUND && tile.getWall() != Wall.BREAKABLE_WALL) {
 							break;
 						}
 
@@ -298,8 +300,7 @@ public class GameManager {
 
 							tile.setFireOwnerId(detonatedBombModel.getTriggererPlayer());
 
-							if ((levelComponent.getWall() == Wall.BREAKABLE_WALL)
-							        || ((levelComponent.getWall() == Wall.GROUND) && (levelComponent.getItem() != null))) {
+							if ((tile.getWall() == Wall.BREAKABLE_WALL) || ((tile.getWall() == Wall.GROUND) && (tile.getItem() != Item.NONE))) {
 								break;
 							}
 						}
@@ -346,7 +347,8 @@ public class GameManager {
 
 	public Bomb getBombAtComponentPosition(int x, int y) {
 		for (Bomb b : lstBomb) {
-			if (b.getX() / Constants.COMPONENT_SIZE_IN_VIRTUAL == x && b.getY() / Constants.COMPONENT_SIZE_IN_VIRTUAL == y) {
+			if (b.getPhase() != BombPhases.FLYING && b.getPhase() != BombPhases.DETONATED && b.getX() / Constants.COMPONENT_SIZE_IN_VIRTUAL == x
+			        && b.getY() / Constants.COMPONENT_SIZE_IN_VIRTUAL == y) {
 				return b;
 			}
 		}
@@ -395,6 +397,43 @@ public class GameManager {
 		}
 	}
 
+	public boolean canBombRollToComponentPosition(Bomb bomb, final int componentPosX, final int componentPosY) {
+
+		LevelModel levelModel = getLevelModel();
+		if ((componentPosX < 0) || (componentPosX >= levelModel.getWidth()) || (componentPosY < 0) || (componentPosY >= levelModel.getHeight())) {
+			return false;
+		}
+
+		LevelTileModel levelComponentAheadAhead = levelModel.getTile(componentPosX, componentPosY);
+		if (levelComponentAheadAhead.getWall() != Wall.GROUND) {
+			return false;
+		}
+		if ((levelComponentAheadAhead.getWall() == Wall.GROUND) && (levelComponentAheadAhead.getItem() != Item.NONE)) {
+			// && getGlobalServerOptions().isItemsStopRollingBombs()
+			return false;
+		}
+
+		// Collision with players:
+		for (Player player : lstPlayers) {
+			if (player.getActivity() != Activity.DYING) {
+				// "Dead" players doesn't count...
+				if ((player.getComponentPosX() == componentPosX) && (player.getComponentPosY() == componentPosY)) {
+					if ((player.getComponentPosX() != bomb.getComponentPosX()) || (player.getComponentPosY() != bomb.getComponentPosY())) {
+						return false;
+					}
+				}
+			}
+		}
+
+		Bomb bombAtPos = getBombAtComponentPosition(componentPosX, componentPosY);
+		if (!bombAtPos.equals(bomb)) {
+			// another bomb
+			return false;
+		}
+
+		return true;
+	}
+
 	public boolean isPlayerAtComponentPositionExcludePlayer(int componentPosX, int componentPosY, PlayerModel model) {
 		// TODO Auto-generated method stub
 		return false;
@@ -402,6 +441,10 @@ public class GameManager {
 
 	public void clientWantStartMatch() {
 		clientWantStartMatch = true;
+	}
+
+	public Direction getRandomDirection() {
+		return Direction.values()[(int) (Math.random() * 4)];
 	}
 
 }
