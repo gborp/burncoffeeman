@@ -7,6 +7,10 @@ import com.braids.burncoffeeman.common.BombPhases;
 import com.braids.burncoffeeman.common.BombType;
 import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.Direction;
+import com.braids.burncoffeeman.common.Item;
+import com.braids.burncoffeeman.common.LevelModel;
+import com.braids.burncoffeeman.common.LevelTileModel;
+import com.braids.burncoffeeman.common.Wall;
 
 public class Bomb {
 
@@ -22,7 +26,7 @@ public class Bomb {
 	private int                triggerPlayer;
 	private EnumSet<Direction> setExcludedDirection;
 
-	public Bomb(int playerId, int x, int y, int range) {
+	public Bomb(int playerId, int x, int y, int range, Direction direction) {
 		model = new BombModel();
 		model.setId(GameManager.getInstance().getNextBombId());
 		model.setBombOwnerId(playerId);
@@ -30,8 +34,12 @@ public class Bomb {
 		model.setX(x);
 		model.setY(y);
 		model.setRange(range);
-		setPhase(BombPhases.STANDING);
+		setDirection(direction);
+		setPhase(BombPhases.FLYING);
+		tickingCountdown = Constants.BOMB_DETONATION_ITERATIONS;
 		setExcludedDirection = EnumSet.noneOf(Direction.class);
+		setFlyingTargetX(getX() + Constants.LEVEL_COMPONENT_GRANULARITY * getDirectionXMultiplier());
+		setFlyingTargetY(getY() + Constants.LEVEL_COMPONENT_GRANULARITY * getDirectionYMultiplier());
 
 		firstCycle = true;
 	}
@@ -86,6 +94,117 @@ public class Bomb {
 
 	public void cycle() {
 		stateChanged = false;
+
+		GameManager gm = GameManager.getInstance();
+
+		LevelModel levelModel = GameManager.getInstance().getLevelModel();
+
+		if (phase == BombPhases.FLYING) {
+			stateChanged = true;
+			int newPosX = getX() + getDirection().getXMultiplier() * Constants.BOMB_FLYING_SPEED;
+			int newPosY = getY() + getDirection().getYMultiplier() * Constants.BOMB_FLYING_SPEED;
+
+			if (newPosX < 0) {
+				model.setX(levelModel.getWidth() * Constants.LEVEL_COMPONENT_GRANULARITY - 1);
+			} else if (newPosX > levelModel.getWidth() * Constants.LEVEL_COMPONENT_GRANULARITY - 1) {
+				model.setX(0);
+			} else {
+				model.setX(newPosX);
+			}
+			if (newPosY < 0) {
+				model.setY(levelModel.getHeight() * Constants.LEVEL_COMPONENT_GRANULARITY - 1);
+			} else if (newPosY > levelModel.getHeight() * Constants.LEVEL_COMPONENT_GRANULARITY - 1) {
+				model.setY(0);
+			} else {
+				model.setY(newPosY);
+			}
+
+			boolean reachedPotentialTargetPosition = false;
+			if ((getDirection().getXMultiplier() != 0) && (Math.abs(getX() - getFlyingTargetX()) > Constants.LEVEL_COMPONENT_GRANULARITY)) {
+				;
+			} else if ((getDirection().getYMultiplier() != 0) && (Math.abs(getY() - getFlyingTargetY()) > Constants.LEVEL_COMPONENT_GRANULARITY)) {
+				;
+			} else {
+				if ((getDirection() == Direction.LEFT) && (model.getX() <= getFlyingTargetX())) {
+					reachedPotentialTargetPosition = true;
+				}
+				if ((getDirection() == Direction.RIGHT) && (model.getX() >= getFlyingTargetX())) {
+					reachedPotentialTargetPosition = true;
+				}
+				if ((getDirection() == Direction.UP) && (model.getY() <= getFlyingTargetY())) {
+					reachedPotentialTargetPosition = true;
+				}
+				if ((getDirection() == Direction.DOWN) && (model.getY() >= getFlyingTargetY())) {
+					reachedPotentialTargetPosition = true;
+				}
+			}
+
+			if (reachedPotentialTargetPosition) {
+				boolean permanentTargetPosition = true;
+				LevelTileModel levelComponent = levelModel.getTile(getComponentPosX(), getComponentPosY());
+				if ((levelComponent.getWall() != Wall.GROUND) || ((levelComponent.getWall() == Wall.GROUND) && (levelComponent.getItem() != Item.NONE))) {
+					permanentTargetPosition = false;
+				} else if (gm.isBombAtComponentPosition(getComponentPosX(), getComponentPosY())) {
+					permanentTargetPosition = false;
+				} else if (gm.isPlayerAtComponentPositionExcludePlayer(getComponentPosX(), getComponentPosY(), null)) {
+					permanentTargetPosition = false;
+				}
+
+				if (permanentTargetPosition) {
+					setPhase(BombPhases.STANDING);
+					setX(getFlyingTargetX());
+					setY(getFlyingTargetY());
+				} else {
+					setX(getFlyingTargetX());
+					setY(getFlyingTargetY());
+					setDirection(gm.getRandomDirection());
+				}
+				gm.validateAndSetFlyingTargetPosX(this, getFlyingTargetX() + getDirectionXMultiplier() * Constants.LEVEL_COMPONENT_GRANULARITY);
+				gm.validateAndSetFlyingTargetPosY(this, getFlyingTargetY() + getDirectionYMultiplier() * Constants.LEVEL_COMPONENT_GRANULARITY);
+			}
+		} else if (phase == BombPhases.ROLLING) {
+			stateChanged = true;
+			if (gm.canBombRollToComponentPosition(this, getComponentPosX() + getDirectionXMultiplier(), getComponentPosY() + getDirectionYMultiplier())) {
+				// if (MathHelper.checkRandomEvent(model.getCrazyPercent() /
+				// (CoreConsts.LEVEL_COMPONENT_GRANULARITY /
+				// CoreConsts.BOMB_ROLLING_SPEED))) {
+				// Directions newDirection =
+				// Directions.values()[gameCoreHandler.getRandom().nextInt(Directions.values().length)];
+				// if (newDirection.equals(model.getDirection()) ||
+				// newDirection.equals(model.getDirection().getOpposite())) {
+				// newDirection = newDirection.getTurnLeft();
+				// }
+				// if (gameCoreHandler.canBombRollToComponentPosition(model,
+				// model.getComponentPosX() + newDirection.getXMultiplier(),
+				// model
+				// .getComponentPosY()
+				// + newDirection.getYMultiplier())) {
+				// model.setDirection(newDirection);
+				// }
+				// }
+
+				setX(getX() + Constants.BOMB_ROLLING_SPEED * getDirectionXMultiplier());
+				setY(getY() + Constants.BOMB_ROLLING_SPEED * getDirectionYMultiplier());
+
+				LevelTileModel levelComponent = levelModel.getTile(getComponentPosX(), getComponentPosY());
+				if (levelComponent.getItem() != Item.NONE) {
+					levelComponent.setItem(Item.NONE);
+				}
+			} else {
+				// if (isDetonatingOnHit()) {
+				// model.setAboutToDetonate(true);
+				// } else {
+				alignPosXToComponentCenter();
+				alignPosYToComponentCenter();
+
+				if (getType() == BombType.JELLY) {
+					setDirection(getDirection().getOpposite());
+				} else {
+					setPhase(BombPhases.STANDING);
+				}
+				// }
+			}
+		}
 
 		if (firstCycle) {
 			firstCycle = false;
@@ -151,23 +270,11 @@ public class Bomb {
 	}
 
 	public int getDirectionXMultiplier() {
-		if (getDirection() == Direction.LEFT) {
-			return -1;
-		} else if (getDirection() == Direction.RIGHT) {
-			return 1;
-		} else {
-			return 0;
-		}
+		return getDirection().getXMultiplier();
 	}
 
 	public int getDirectionYMultiplier() {
-		if (getDirection() == Direction.UP) {
-			return -1;
-		} else if (getDirection() == Direction.DOWN) {
-			return 1;
-		} else {
-			return 0;
-		}
+		return getDirection().getYMultiplier();
 	}
 
 	public int getComponentPosX() {
@@ -204,6 +311,18 @@ public class Bomb {
 
 	public boolean isExcludedDetonationDirection(Direction direction) {
 		return setExcludedDirection.contains(direction);
+	}
+
+	private void alignPosXToComponentCenter() {
+		setX(getX() + Constants.LEVEL_COMPONENT_GRANULARITY / 2 - getX() % Constants.LEVEL_COMPONENT_GRANULARITY);
+	}
+
+	/**
+	 * Aligns the x coordinate of the position to be at the center of the
+	 * component this position is on.
+	 */
+	private void alignPosYToComponentCenter() {
+		setY(getY() + Constants.LEVEL_COMPONENT_GRANULARITY / 2 - getY() % Constants.LEVEL_COMPONENT_GRANULARITY);
 	}
 
 }
