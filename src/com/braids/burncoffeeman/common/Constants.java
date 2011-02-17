@@ -26,7 +26,7 @@ public class Constants {
 
 	public static final int     COMPONENT_SIZE_IN_VIRTUAL               = 1155;
 
-	public static final int     SEND_MAP_SEGMENT_PACKET_SIZE            = 50;
+	public static final int     SEND_MAP_SEGMENT_PACKET_SIZE            = 1;
 	public static final int     SEND_MAP_SEGMENT_BOOST_PACKET_SIZE      = 50;
 
 	public static final int     MOVEMENT_CORRECTION_SENSITIVITY         = 85;

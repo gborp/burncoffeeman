@@ -92,8 +92,7 @@ public class GameManager {
 				ltm.setItem(Item.NONE);
 				ltm.setFire(Fire.NONE);
 				if (ground) {
-
-					ltm.setWall(Math.random() > 0.2 ? Wall.GROUND : Wall.BREAKABLE_WALL);
+					ltm.setWall(Math.random() > 0.4 ? Wall.GROUND : Wall.BREAKABLE_WALL);
 				} else {
 					ltm.setWall(Wall.WALL);
 				}
@@ -121,6 +120,9 @@ public class GameManager {
 			LevelTileModel ltm = levelModel.getTile(fullMapSendPos % levelModel.getWidth(), fullMapSendPos / levelModel.getWidth());
 			bbOut.put(ltm.code());
 			fullMapSendPos++;
+		}
+		for (LevelTileModel ltm : levelModel.getChangedTiles()) {
+			bbOut.put(ltm.code());
 		}
 	}
 
@@ -194,6 +196,14 @@ public class GameManager {
 
 	public void matchCycle() {
 		for (Player player : lstPlayers) {
+			player.resetStateChanged();
+		}
+		for (Bomb bomb : lstBomb) {
+			bomb.resetStateChanged();
+		}
+		levelModel.resetStateChanged();
+
+		for (Player player : lstPlayers) {
 			player.cycle();
 		}
 
@@ -261,6 +271,11 @@ public class GameManager {
 				Bomb detonatedBombModel = detonatableBombModels.get(i);
 				int detonatedBombComponentPosX = detonatedBombModel.getComponentPosX();
 				int detonatedBombComponentPosY = detonatedBombModel.getComponentPosY();
+
+				Player bombOwnerPlayer = getPlayerById(detonatedBombModel.getBombOwnerId());
+				if (bombOwnerPlayer != null) {
+					bombOwnerPlayer.oneBombDetonated();
+				}
 
 				LevelTileModel tileCross = levelModel.getTile(detonatedBombComponentPosX, detonatedBombComponentPosY);
 				tileCross.setFire(Fire.CROSSING);
@@ -432,6 +447,15 @@ public class GameManager {
 		}
 
 		return true;
+	}
+
+	public Player getPlayerById(int playerId) {
+		for (Player p : lstPlayers) {
+			if (p.getId() == playerId) {
+				return p;
+			}
+		}
+		return null;
 	}
 
 	public boolean isPlayerAtComponentPositionExcludePlayer(int componentPosX, int componentPosY, PlayerModel model) {

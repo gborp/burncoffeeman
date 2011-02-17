@@ -226,6 +226,18 @@ public class PlayerModel implements CoderDecoder {
 		return disease;
 	}
 
+	public boolean hasDisease(Disease d) {
+		return this.disease.contains(d);
+	}
+
+	public void clearDiseases() {
+		disease.clear();
+	}
+
+	public void addDisease(Disease d) {
+		disease.add(d);
+	}
+
 	public int getAnimationPhase() {
 		return this.animationPhase;
 	}

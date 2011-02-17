@@ -45,7 +45,7 @@ public class ScaledGfxHelper {
 			AnimTilePhase body = gtm.getAnimPhase(groupName, AnimTilePhaseType.BODY, activityType, direction, phaseNumber);
 			AnimTilePhase legs = gtm.getAnimPhase(groupName, AnimTilePhaseType.LEGS, activityType, direction, phaseNumber);
 
-			result = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+			result = new BufferedImage(size + 1, size + 1, BufferedImage.TYPE_INT_ARGB);
 			GfxHelper.paintBombermanAnimPhase(result.getGraphics(), size / 16f, phaseNumber, Color.RED, Color.YELLOW, head, body, legs);
 			mapPlayer.put(slot, result);
 		}

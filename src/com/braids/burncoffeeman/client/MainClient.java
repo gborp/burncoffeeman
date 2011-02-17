@@ -2,6 +2,7 @@ package com.braids.burncoffeeman.client;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -92,22 +93,20 @@ public class MainClient {
 			}
 		}, 40, 40);
 
-		// timer.schedule(new TimerTask() {
-		//
-		// DecimalFormat twoPlaces = new DecimalFormat("0.00");
-		//
-		// private String formatIntToKb(int i) {
-		//
-		// return twoPlaces.format(((float) i) / 1024);
-		// }
-		//
-		// public void run() {
-		// System.out.println("IN/OUT kb/s: " +
-		// formatIntToKb(comm.getStatisticsInputBytes()) + " " +
-		// formatIntToKb(comm.getStatisticsOutputBytes()));
-		// comm.resetInputOutputStatistics();
-		// }
-		// }, 1000, 1000);
+		timer.schedule(new TimerTask() {
+
+			DecimalFormat twoPlaces = new DecimalFormat("0.00");
+
+			private String formatIntToKb(int i) {
+
+				return twoPlaces.format(((float) i) / 1024);
+			}
+
+			public void run() {
+				System.out.println("IN/OUT kb/s: " + formatIntToKb(comm.getStatisticsInputBytes()) + " " + formatIntToKb(comm.getStatisticsOutputBytes()));
+				comm.resetInputOutputStatistics();
+			}
+		}, 1000, 1000);
 
 		displayer.addKeyListener(new GameKeyListener(clientInputModel, comm));
 	}

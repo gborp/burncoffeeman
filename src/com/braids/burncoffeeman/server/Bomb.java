@@ -38,8 +38,8 @@ public class Bomb {
 		setPhase(BombPhases.FLYING);
 		tickingCountdown = Constants.BOMB_DETONATION_ITERATIONS;
 		setExcludedDirection = EnumSet.noneOf(Direction.class);
-		setFlyingTargetX(getX() + Constants.LEVEL_COMPONENT_GRANULARITY * getDirectionXMultiplier());
-		setFlyingTargetY(getY() + Constants.LEVEL_COMPONENT_GRANULARITY * getDirectionYMultiplier());
+		setFlyingTargetX(getX());
+		setFlyingTargetY(getY());
 
 		firstCycle = true;
 	}
@@ -92,8 +92,11 @@ public class Bomb {
 		return model.getId();
 	}
 
-	public void cycle() {
+	public void resetStateChanged() {
 		stateChanged = false;
+	}
+
+	public void cycle() {
 
 		GameManager gm = GameManager.getInstance();
 
