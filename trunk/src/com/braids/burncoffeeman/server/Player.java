@@ -22,24 +22,24 @@ import com.braids.burncoffeeman.common.Wall;
 
 public class Player {
 
-	private GameManager                          gameManager;
-	private PlayerModel                          model;
-	private boolean                              action1;
-	private boolean                              action2;
-	private PlayerInfoModel                      playerInfo;
-	private PlayerProcessInput                   processInput;
-	private PlayerProcessOutput                  processOutput;
+	private GameManager            gameManager;
+	private PlayerModel            model;
+	private boolean                action1;
+	private boolean                action2;
+	private PlayerInfoModel        playerInfo;
+	private PlayerProcessInput     processInput;
+	private PlayerProcessOutput    processOutput;
 
-	private boolean                              firstCycle;             ;
-	private boolean                              stateChanged;
-	private ClientInputModel                     unprocessedClientInput;
-	private ClientInputModel                     clientInput;
-	private ClientInputModel                     prevClientInput;
-	private EnumMap<Item, Integer>               mapItems;
-	private EnumSet<Item>                        lstNonAccumItems;
+	private boolean                firstCycle;             ;
+	private boolean                stateChanged;
+	private ClientInputModel       unprocessedClientInput;
+	private ClientInputModel       clientInput;
+	private ClientInputModel       prevClientInput;
+	private EnumMap<Item, Integer> mapItems;
+	private EnumSet<Item>          lstNonAccumItems;
 
-	private int                                  iterationCounter;
-	private com.braids.burncoffeeman.server.Bomb pickedUpBomb;
+	private int                    iterationCounter;
+	private Bomb                   pickedUpBomb;
 
 	public Player(Socket socket, int playerId) throws IOException {
 		gameManager = GameManager.getInstance();
@@ -118,10 +118,9 @@ public class Player {
 		}
 		// }
 
-		// if (gameCoreHandler.isBombAtComponentPosition(componentPosX,
-		// componentPosY)) {
-		// return false;
-		// }
+		if (gameManager.isBombAtComponentPosition(componentPosX, componentPosY)) {
+			return false;
+		}
 
 		return true;
 	}
@@ -393,9 +392,12 @@ public class Player {
 		Activity activity = model.getActivity();
 
 		if ((activity == Activity.WALKING) || (activity == Activity.WALKING_WITH_BOMB) || ((activity == Activity.PUNCHING) && isDirectionKeyPressed())) {
+			stateChanged = true;
 			boolean movementCorrectionActivated = determineNewDirection();
 
 			int speed = model.getSpeed();
+
+			model.setAnimationPhase((model.getAnimationPhase() + speed) & 0xffff);
 			// TODO
 			// + model.getEffectiveRollerSkates() *
 			// Constants.BOBMERMAN_ROLLER_SKATES_SPEED_INCREMENT;
@@ -458,11 +460,8 @@ public class Player {
 
 			LevelModel levelModel = gameManager.getLevelModel();
 			if (speed > 0) {
-				model.setAnimationPhase((model.getAnimationPhase() + speed) & 0xffff);
-
 				model.setX(model.getX() + getDirectionXMultiplier() * speed);
 				model.setY(model.getY() + getDirectionYMultiplier() * speed);
-				stateChanged = true;
 				// TODO
 				// checkAndHandleItemPickingUp();
 			}
@@ -499,6 +498,10 @@ public class Player {
 		mapItems.put(item, count);
 	}
 
+	public void oneBombDetonated() {
+		mapItems.put(Item.BOMB, mapItems.get(Item.BOMB) + 1);
+	}
+
 	private void handleFunction1WithoutBomb() {
 		if (model.getDisease().contains(Disease.NO_BOMB)) {
 			return;
@@ -508,7 +511,11 @@ public class Player {
 		int playerComponentPosY = getComponentPosY();
 		int componentPosX = playerComponentPosX;
 		int componentPosY = playerComponentPosY;
-		int maxPlacableBombs = 1;
+		int bombsCount = getNumberOfItem(Item.BOMB);
+		int maxPlaceableBombs = bombsCount > 0 ? 1 : 0;
+		if (model.hasDisease(Disease.NO_BOMB)) {
+			maxPlaceableBombs = 0;
+		}
 
 		LevelTileModel tile = gameManager.getLevelModel().getTile(componentPosX, componentPosY);
 
@@ -539,8 +546,7 @@ public class Player {
 
 		LevelModel levelModel = gameManager.getLevelModel();
 
-		int bombsCount = getNumberOfItem(Item.BOMB);
-		for (int i = 0; i < maxPlacableBombs; i++) {
+		for (int i = 0; i < maxPlaceableBombs; i++) {
 			LevelTileModel comp = levelModel.getTile(componentPosX, componentPosY);
 			Wall wallInPosition = comp.getWall();
 
@@ -560,7 +566,7 @@ public class Player {
 			// int bombRange = model.hasNonAccumItem(Items.SUPER_FIRE) ?
 			// CoreConsts.SUPER_FIRE_RANGE :
 			// model.accumulateableItemQuantitiesMap.get(Items.FIRE) + 1;
-			int bombRange = 4;
+			int bombRange = 2;
 
 			// if (model.getOwnedDiseases().containsKey(Diseases.SHORT_RANGE)) {
 			// bombRange = 2;
@@ -659,9 +665,11 @@ public class Player {
 	// }
 	// }
 
-	public void cycle() {
+	public void resetStateChanged() {
 		stateChanged = false;
+	}
 
+	public void cycle() {
 		ClientInputModel newClientInput = getClientInput();
 		prevClientInput = clientInput;
 		if (newClientInput != null) {
@@ -714,4 +722,7 @@ public class Player {
 		return playerInfo.getGfxLegsGroup();
 	}
 
+	public int getId() {
+		return model.getPlayerId();
+	}
 }

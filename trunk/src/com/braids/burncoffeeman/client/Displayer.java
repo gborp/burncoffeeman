@@ -60,7 +60,7 @@ public class Displayer extends JPanel {
 		g.translate((getWidth() - componentSize * levelModel.getWidth()) / 2, (getHeight() - componentSize * levelModel.getHeight()) / 2);
 
 		int virtualSize = Constants.COMPONENT_SIZE_IN_VIRTUAL;
-		float divider = virtualSize / componentSize;
+		float divider = virtualSize / (float) componentSize;
 
 		for (int y = 0; y < levelModel.getHeight(); y++) {
 			for (int x = 0; x < levelModel.getWidth(); x++) {
@@ -83,16 +83,16 @@ public class Displayer extends JPanel {
 		Collection<PlayerModel> lstPlayers = players.getPlayerModels();
 
 		for (PlayerModel playerModel : lstPlayers) {
-			int x = (int) ((playerModel.getX() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
-			int y = (int) ((playerModel.getY() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
+			int x = (int) ((playerModel.getX() - Constants.COMPONENT_SIZE_IN_VIRTUAL * 1.5 / 2) / divider);
+			int y = (int) ((playerModel.getY() - Constants.COMPONENT_SIZE_IN_VIRTUAL) / divider);
 
 			int phaseCount = playerModel.getAnimationPhase() / 640;
 
 			Activity activity = playerModel.getActivity();
 			Activity activityForGfx = getActivityForGfx(activity);
 
-			BufferedImage playerGfx = ScaledGfxHelper.getPlayer(componentSize, Color.RED, Color.YELLOW, "default", activityForGfx, playerModel.getDirection(),
-			        phaseCount);
+			BufferedImage playerGfx = ScaledGfxHelper.getPlayer((int) (componentSize * 1.5), Color.RED, Color.YELLOW, "default", activityForGfx, playerModel
+			        .getDirection(), phaseCount);
 			g.drawImage(playerGfx, x, y, null);
 		}
 	}
@@ -108,7 +108,7 @@ public class Displayer extends JPanel {
 		return activity;
 	}
 
-	private void drawTile(Graphics g, int x, int y, float componentSize, LevelTileModel tile) {
+	private void drawTile(Graphics g, int x, int y, int componentSize, LevelTileModel tile) {
 		switch (tile.getWall()) {
 			case GROUND:
 				if (tile.hasFire()) {
@@ -121,10 +121,14 @@ public class Displayer extends JPanel {
 				g.setColor(Color.DARK_GRAY);
 				break;
 			case BREAKABLE_WALL:
-				g.setColor(Color.BLUE);
+				if (tile.hasFire()) {
+					g.setColor(Color.RED);
+				} else {
+					g.setColor(Color.BLUE);
+				}
 				break;
 		}
-		g.fillRect((int) (x * componentSize), (int) (y * componentSize), (int) componentSize, (int) componentSize);
+		g.fillRect((x * componentSize), (y * componentSize), componentSize, componentSize);
 	}
 
 	public void addAnimTileModel(AnimTileModel data) {

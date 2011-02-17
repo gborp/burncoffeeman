@@ -1,5 +1,8 @@
 package com.braids.burncoffeeman.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LevelModel {
 
 	private LevelTileModel[][] levelTiles;
@@ -36,13 +39,32 @@ public class LevelModel {
 		return height;
 	}
 
+	public void resetStateChanged() {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				levelTiles[x][y].resetStateChanged();
+			}
+		}
+	}
+
 	public void cycle() {
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				levelTiles[x][y].cycle();
 			}
 		}
-
 	}
 
+	public List<LevelTileModel> getChangedTiles() {
+		ArrayList<LevelTileModel> lstResult = new ArrayList<LevelTileModel>();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				LevelTileModel tile = levelTiles[x][y];
+				if (tile.isStateChanged()) {
+					lstResult.add(tile);
+				}
+			}
+		}
+		return lstResult;
+	}
 }
