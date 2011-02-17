@@ -129,7 +129,7 @@ public class Editor extends JPanel {
 		} else if (y < EditorManager.getInstance().getCurrentHead().getHeight() + EditorManager.getInstance().getCurrentBody().getHeight()) {
 			EditorManager.getInstance().getCurrentBody().setPixel(x, y - EditorManager.getInstance().getCurrentHead().getHeight(), color);
 		} else {
-			EditorManager.getInstance().getCurrentLeg().setPixel(x,
+			EditorManager.getInstance().getCurrentLegs().setPixel(x,
 			        y - EditorManager.getInstance().getCurrentHead().getHeight() - EditorManager.getInstance().getCurrentBody().getHeight(), color);
 		}
 		repaint();
@@ -144,7 +144,7 @@ public class Editor extends JPanel {
 		} else if (y < EditorManager.getInstance().getCurrentHead().getHeight() + EditorManager.getInstance().getCurrentBody().getHeight()) {
 			return EditorManager.getInstance().getCurrentBody().getPixel(x, y - EditorManager.getInstance().getCurrentHead().getHeight());
 		} else {
-			return EditorManager.getInstance().getCurrentLeg().getPixel(x,
+			return EditorManager.getInstance().getCurrentLegs().getPixel(x,
 			        y - EditorManager.getInstance().getCurrentHead().getHeight() - EditorManager.getInstance().getCurrentBody().getHeight());
 		}
 	}
@@ -260,9 +260,9 @@ public class Editor extends JPanel {
 			g.drawRect(0, prevYOffeset, (int) (16 * zoomRatio) - 1, yOffset - prevYOffeset - 1);
 		}
 
-		paintTile(g, EditorManager.getInstance().getCurrentLeg(), yOffset);
+		paintTile(g, EditorManager.getInstance().getCurrentLegs(), yOffset);
 		prevYOffeset = yOffset;
-		yOffset += EditorManager.getInstance().getCurrentLeg().getHeight() * zoomRatio;
+		yOffset += EditorManager.getInstance().getCurrentLegs().getHeight() * zoomRatio;
 		if (showAreaBorders) {
 			g.setColor(Color.BLACK);
 			g.drawRect(0, prevYOffeset, (int) (16 * zoomRatio) - 1, yOffset - prevYOffeset - 1);

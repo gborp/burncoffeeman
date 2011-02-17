@@ -5,12 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
@@ -60,7 +62,6 @@ public class MainEditor {
 		}
 
 		JPanel pnlCommands = new JPanel(new FlowLayout());
-		JButton btnSaveAll = new JButton(new SaveAllAction());
 
 		ItemListener switchAnimPhase = new ItemListener() {
 
@@ -77,13 +78,7 @@ public class MainEditor {
 			}
 		});
 
-		ArrayList<Activity> lstAnimatedActivities = new ArrayList<Activity>();
-		for (Activity li : Activity.values()) {
-			if (li.hasOwnGfx) {
-				lstAnimatedActivities.add(li);
-			}
-		}
-		cbType = new JComboBox(lstAnimatedActivities.toArray());
+		cbType = new JComboBox(Activity.getAnimateds().toArray());
 		cbType.setSelectedItem(Activity.STANDING);
 		cbType.addItemListener(switchAnimPhase);
 
@@ -95,7 +90,6 @@ public class MainEditor {
 		pnlCommands.add(cbType);
 		pnlCommands.add(cbDirection);
 		pnlCommands.add(new JSeparator(SwingConstants.VERTICAL));
-		pnlCommands.add(btnSaveAll);
 
 		cbGroupHead = new JComboBox(EditorManager.getInstance().getGroupListForHead().toArray());
 		cbGroupHead.setSelectedItem("default");
@@ -146,6 +140,19 @@ public class MainEditor {
 		frame.add(pnlCenter, cc.xy(1, 3));
 		frame.add(pnlPalette, cc.xy(1, 5));
 
+		JMenuBar menuBar = new JMenuBar();
+		JMenu mnFile = new JMenu("File");
+		mnFile.add(new JMenuItem(new SaveAllAction()));
+
+		JMenu mnWizard = new JMenu("Wizard");
+		mnWizard.add(new JMenuItem(new PasteCurrentHeadPhaseToAll()));
+		mnWizard.add(new JMenuItem(new PasteCurrentBodyPhaseToAll()));
+		mnWizard.add(new JMenuItem(new PasteCurrentLegsPhaseToAll()));
+
+		menuBar.add(mnFile);
+		menuBar.add(mnWizard);
+
+		frame.setJMenuBar(menuBar);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
@@ -168,7 +175,7 @@ public class MainEditor {
 
 		em.setCurrentHead(em.getCreateAnimTilePhase((String) cbGroupHead.getSelectedItem(), AnimTilePhaseType.HEAD, type, direction, phase));
 		em.setCurrentBody(em.getCreateAnimTilePhase((String) cbGroupBody.getSelectedItem(), AnimTilePhaseType.BODY, type, direction, phase));
-		em.setCurrentLeg(em.getCreateAnimTilePhase((String) cbGroupLegs.getSelectedItem(), AnimTilePhaseType.LEGS, type, direction, phase));
+		em.setCurrentLegs(em.getCreateAnimTilePhase((String) cbGroupLegs.getSelectedItem(), AnimTilePhaseType.LEGS, type, direction, phase));
 		editor.animChanged();
 	}
 
@@ -314,6 +321,42 @@ public class MainEditor {
 			EditorManager.getInstance().pasteLeg();
 			editor.animChanged();
 		}
+	}
+
+	private class PasteCurrentHeadPhaseToAll extends AbstractAction {
+
+		public PasteCurrentHeadPhaseToAll() {
+			super("Paste Current Head Phase To All");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			EditorManager.getInstance().pasteCurrentHeadPhaseToAll();
+		}
+
+	}
+
+	private class PasteCurrentBodyPhaseToAll extends AbstractAction {
+
+		public PasteCurrentBodyPhaseToAll() {
+			super("Paste Current Body Phase To All");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			EditorManager.getInstance().pasteCurrentBodyPhaseToAll();
+		}
+
+	}
+
+	private class PasteCurrentLegsPhaseToAll extends AbstractAction {
+
+		public PasteCurrentLegsPhaseToAll() {
+			super("Paste Current Legs Phase To All");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			EditorManager.getInstance().pasteCurrentLegsPhaseToAll();
+		}
+
 	}
 
 	public static void main(String[] args) throws IOException {
