@@ -105,7 +105,7 @@ public class GraphicsTemplateManager {
 	public void loadAnims(File dir) {
 
 		for (File file : dir.listFiles()) {
-			if (file.isFile() && !file.isHidden() && file.getName().endsWith(".png")) {
+			if (file.isFile() && !file.isHidden() && file.getName().endsWith(".png") && file.getName().contains("_")) {
 				try {
 					BufferedImage image = ImageIO.read(file);
 

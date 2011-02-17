@@ -1,5 +1,7 @@
 package com.braids.burncoffeeman.common;
 
+import java.util.ArrayList;
+
 public enum Activity {
 	/** Standing activity. */
 	STANDING(1, true, true),
@@ -65,5 +67,15 @@ public enum Activity {
 			}
 		}
 		return result;
+	}
+
+	public static ArrayList<Activity> getAnimateds() {
+		ArrayList<Activity> lstAnimatedActivities = new ArrayList<Activity>();
+		for (Activity li : Activity.values()) {
+			if (li.hasOwnGfx) {
+				lstAnimatedActivities.add(li);
+			}
+		}
+		return lstAnimatedActivities;
 	}
 }

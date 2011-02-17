@@ -17,7 +17,7 @@ public class EditorManager {
 
 	private AnimTilePhase           currentHead;
 	private AnimTilePhase           currentBody;
-	private AnimTilePhase           currentLeg;
+	private AnimTilePhase           currentLegs;
 	private AnimTilePhase           copyHead;
 	private AnimTilePhase           copyBody;
 	private AnimTilePhase           copyLeg;
@@ -38,7 +38,7 @@ public class EditorManager {
 		gtm.loadAnims(new File("gfx"));
 		currentHead = getCreateAnimTilePhase("default", AnimTilePhaseType.HEAD, Activity.STANDING, Direction.LEFT, 1);
 		currentBody = getCreateAnimTilePhase("default", AnimTilePhaseType.BODY, Activity.STANDING, Direction.LEFT, 1);
-		currentLeg = getCreateAnimTilePhase("default", AnimTilePhaseType.LEGS, Activity.STANDING, Direction.LEFT, 1);
+		currentLegs = getCreateAnimTilePhase("default", AnimTilePhaseType.LEGS, Activity.STANDING, Direction.LEFT, 1);
 	}
 
 	public AnimTilePhase getCreateAnimTilePhase(String groupName, AnimTilePhaseType type, Activity activityType, Direction direction, int phaseNumber) {
@@ -61,12 +61,12 @@ public class EditorManager {
 		this.currentBody = currentBody;
 	}
 
-	public AnimTilePhase getCurrentLeg() {
-		return this.currentLeg;
+	public AnimTilePhase getCurrentLegs() {
+		return this.currentLegs;
 	}
 
-	public void setCurrentLeg(AnimTilePhase currentLeg) {
-		this.currentLeg = currentLeg;
+	public void setCurrentLegs(AnimTilePhase currentLeg) {
+		this.currentLegs = currentLeg;
 	}
 
 	public void copyHead() {
@@ -86,11 +86,11 @@ public class EditorManager {
 	}
 
 	public void copyLeg() {
-		copyLeg = currentLeg;
+		copyLeg = currentLegs;
 	}
 
 	public void pasteLeg() {
-		currentLeg.copyContentsFrom(copyLeg);
+		currentLegs.copyContentsFrom(copyLeg);
 	}
 
 	public void mirrorHead() {
@@ -102,7 +102,7 @@ public class EditorManager {
 	}
 
 	public void mirrorLeg() {
-		currentLeg.mirror();
+		currentLegs.mirror();
 	}
 
 	public List<String> getGroupListForHead() {
@@ -119,6 +119,33 @@ public class EditorManager {
 
 	public void saveAll() {
 		gtm.saveAll();
+	}
+
+	public void pasteCurrentHeadPhaseToAll() {
+		for (Activity activity : Activity.getAnimateds()) {
+			for (int i = 1; i <= activity.getIterations(); i++) {
+				getCreateAnimTilePhase(currentHead.getGroupName(), AnimTilePhaseType.HEAD, activity, currentHead.getDirection(), i).copyContentsFrom(
+				        currentHead);
+			}
+		}
+	}
+
+	public void pasteCurrentBodyPhaseToAll() {
+		for (Activity activity : Activity.getAnimateds()) {
+			for (int i = 1; i <= activity.getIterations(); i++) {
+				getCreateAnimTilePhase(currentBody.getGroupName(), AnimTilePhaseType.BODY, activity, currentBody.getDirection(), i).copyContentsFrom(
+				        currentBody);
+			}
+		}
+	}
+
+	public void pasteCurrentLegsPhaseToAll() {
+		for (Activity activity : Activity.getAnimateds()) {
+			for (int i = 1; i <= activity.getIterations(); i++) {
+				getCreateAnimTilePhase(currentLegs.getGroupName(), AnimTilePhaseType.LEGS, activity, currentLegs.getDirection(), i).copyContentsFrom(
+				        currentLegs);
+			}
+		}
 	}
 
 }
