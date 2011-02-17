@@ -104,23 +104,23 @@ public class GameManager {
 		mapSentOnce = false;
 	}
 
-	private void sendMapSegment() {
+	private void sendMap() {
 		int count;
 		if (mapSentOnce) {
 			count = Constants.SEND_MAP_SEGMENT_PACKET_SIZE;
 		} else {
 			count = Constants.SEND_MAP_SEGMENT_BOOST_PACKET_SIZE;
+			for (int i = 0; i < count; i++) {
+				if (fullMapSendPos >= levelModel.getWidth() * levelModel.getHeight()) {
+					fullMapSendPos = 0;
+					mapSentOnce = true;
+				}
+				LevelTileModel ltm = levelModel.getTile(fullMapSendPos % levelModel.getWidth(), fullMapSendPos / levelModel.getWidth());
+				bbOut.put(ltm.code());
+				fullMapSendPos++;
+			}
 		}
 
-		for (int i = 0; i < count; i++) {
-			if (fullMapSendPos >= levelModel.getWidth() * levelModel.getHeight()) {
-				fullMapSendPos = 0;
-				mapSentOnce = true;
-			}
-			LevelTileModel ltm = levelModel.getTile(fullMapSendPos % levelModel.getWidth(), fullMapSendPos / levelModel.getWidth());
-			bbOut.put(ltm.code());
-			fullMapSendPos++;
-		}
 		for (LevelTileModel ltm : levelModel.getChangedTiles()) {
 			bbOut.put(ltm.code());
 		}
@@ -156,7 +156,7 @@ public class GameManager {
 
 	public void startingMatchCycle() {
 		if (!mapSentOnce) {
-			sendMapSegment();
+			sendMap();
 		}
 		if (!gfxSentOnce) {
 			gfxSentOnce = true;
@@ -214,7 +214,7 @@ public class GameManager {
 		checkAndHandleBombDetonations();
 		levelModel.cycle();
 
-		sendMapSegment();
+		sendMap();
 		for (Player player : lstPlayers) {
 			if (player.isStateChanged()) {
 				bbOut.put(player.getCodedModel());

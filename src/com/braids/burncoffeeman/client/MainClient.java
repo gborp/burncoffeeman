@@ -103,10 +103,11 @@ public class MainClient {
 			}
 
 			public void run() {
-				System.out.println("IN/OUT kb/s: " + formatIntToKb(comm.getStatisticsInputBytes()) + " " + formatIntToKb(comm.getStatisticsOutputBytes()));
+				System.out.println("IN/OUT kb/s: " + formatIntToKb(comm.getStatisticsInputBytes() / 10) + " "
+				        + formatIntToKb(comm.getStatisticsOutputBytes() / 10));
 				comm.resetInputOutputStatistics();
 			}
-		}, 1000, 1000);
+		}, 10000, 10000);
 
 		displayer.addKeyListener(new GameKeyListener(clientInputModel, comm));
 	}
