@@ -36,12 +36,12 @@ public class EditorManager {
 	private void doInit() {
 		gtm = GraphicsTemplateManager.init();
 		gtm.loadAnims(new File("gfx"));
-		currentHead = getCreateAnimTilePhase("default", AnimTilePhaseType.HEAD, Activity.STANDING, Direction.LEFT, 1);
-		currentBody = getCreateAnimTilePhase("default", AnimTilePhaseType.BODY, Activity.STANDING, Direction.LEFT, 1);
-		currentLegs = getCreateAnimTilePhase("default", AnimTilePhaseType.LEGS, Activity.STANDING, Direction.LEFT, 1);
+		currentHead = getAnimTilePhase("default", AnimTilePhaseType.HEAD, Activity.STANDING, Direction.LEFT, 1);
+		currentBody = getAnimTilePhase("default", AnimTilePhaseType.BODY, Activity.STANDING, Direction.LEFT, 1);
+		currentLegs = getAnimTilePhase("default", AnimTilePhaseType.LEGS, Activity.STANDING, Direction.LEFT, 1);
 	}
 
-	public AnimTilePhase getCreateAnimTilePhase(String groupName, AnimTilePhaseType type, Activity activityType, Direction direction, int phaseNumber) {
+	public AnimTilePhase getAnimTilePhase(String groupName, AnimTilePhaseType type, Activity activityType, Direction direction, int phaseNumber) {
 		return gtm.getAnimPhase(groupName, type, activityType, direction, phaseNumber);
 	}
 
@@ -124,7 +124,7 @@ public class EditorManager {
 	public void pasteCurrentHeadPhaseToAll() {
 		for (Activity activity : Activity.getAnimateds()) {
 			for (int i = 1; i <= activity.getIterations(); i++) {
-				getCreateAnimTilePhase(currentHead.getGroupName(), AnimTilePhaseType.HEAD, activity, currentHead.getDirection(), i).copyContentsFrom(
+				getAnimTilePhase(currentHead.getGroupName(), AnimTilePhaseType.HEAD, activity, currentHead.getDirection(), i).copyContentsFrom(
 				        currentHead);
 			}
 		}
@@ -133,7 +133,7 @@ public class EditorManager {
 	public void pasteCurrentBodyPhaseToAll() {
 		for (Activity activity : Activity.getAnimateds()) {
 			for (int i = 1; i <= activity.getIterations(); i++) {
-				getCreateAnimTilePhase(currentBody.getGroupName(), AnimTilePhaseType.BODY, activity, currentBody.getDirection(), i).copyContentsFrom(
+				getAnimTilePhase(currentBody.getGroupName(), AnimTilePhaseType.BODY, activity, currentBody.getDirection(), i).copyContentsFrom(
 				        currentBody);
 			}
 		}
@@ -142,7 +142,7 @@ public class EditorManager {
 	public void pasteCurrentLegsPhaseToAll() {
 		for (Activity activity : Activity.getAnimateds()) {
 			for (int i = 1; i <= activity.getIterations(); i++) {
-				getCreateAnimTilePhase(currentLegs.getGroupName(), AnimTilePhaseType.LEGS, activity, currentLegs.getDirection(), i).copyContentsFrom(
+				getAnimTilePhase(currentLegs.getGroupName(), AnimTilePhaseType.LEGS, activity, currentLegs.getDirection(), i).copyContentsFrom(
 				        currentLegs);
 			}
 		}

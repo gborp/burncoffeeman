@@ -173,9 +173,9 @@ public class MainEditor {
 
 		EditorManager em = EditorManager.getInstance();
 
-		em.setCurrentHead(em.getCreateAnimTilePhase((String) cbGroupHead.getSelectedItem(), AnimTilePhaseType.HEAD, type, direction, phase));
-		em.setCurrentBody(em.getCreateAnimTilePhase((String) cbGroupBody.getSelectedItem(), AnimTilePhaseType.BODY, type, direction, phase));
-		em.setCurrentLegs(em.getCreateAnimTilePhase((String) cbGroupLegs.getSelectedItem(), AnimTilePhaseType.LEGS, type, direction, phase));
+		em.setCurrentHead(em.getAnimTilePhase((String) cbGroupHead.getSelectedItem(), AnimTilePhaseType.HEAD, type, direction, phase));
+		em.setCurrentBody(em.getAnimTilePhase((String) cbGroupBody.getSelectedItem(), AnimTilePhaseType.BODY, type, direction, phase));
+		em.setCurrentLegs(em.getAnimTilePhase((String) cbGroupLegs.getSelectedItem(), AnimTilePhaseType.LEGS, type, direction, phase));
 		editor.animChanged();
 	}
 

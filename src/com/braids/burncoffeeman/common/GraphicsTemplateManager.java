@@ -1,5 +1,6 @@
 package com.braids.burncoffeeman.common;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -293,9 +294,25 @@ public class GraphicsTemplateManager {
 
 	}
 
+	private static BufferedImage[] splitImage(BufferedImage img, int columns, int rows, boolean hasSeparator) {
+		int width = img.getWidth() / columns;
+		int height = img.getHeight() / rows;
+		int num = 0;
+		BufferedImage result[] = new BufferedImage[width * height];
+		for (int y = 0; y < rows; y++) {
+			for (int x = 0; x < columns; x++) {
+				result[num] = new BufferedImage(width, height, img.getType());
+				Graphics2D g = result[num].createGraphics();
+				g.drawImage(img, 0, 0, width, height, width * x, height * y, width * x + width, height * y + height, null);
+				g.dispose();
+				num++;
+			}
+		}
+		return result;
+	}
+
 	private void loadFire() throws IOException {
-		BufferedImage image = ImageIO.read(new File("gfx/tile-fire.png"));
-		// image.
+		BufferedImage[] images = splitImage(ImageIO.read(new File("gfx/tile-fire.png")), 5, 3, false);
 
 	}
 }
