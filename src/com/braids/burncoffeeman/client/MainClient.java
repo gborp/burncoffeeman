@@ -8,7 +8,7 @@ import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
-import com.braids.burncoffeeman.common.AnimTileModel;
+import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.ClientInputModel;
 import com.braids.burncoffeeman.common.Constants;
@@ -133,7 +133,7 @@ public class MainClient {
 		bombs.setBombModel(data);
 	}
 
-	public void addAnimTileModel(AnimTileModel data) {
+	public void addAnimTileModel(GfxByteModel data) {
 		displayer.addAnimTileModel(data);
 	}
 

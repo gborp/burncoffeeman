@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import com.braids.burncoffeeman.common.Activity;
-import com.braids.burncoffeeman.common.AnimTileModel;
+import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.GraphicsTemplateManager;
@@ -131,7 +131,7 @@ public class Displayer extends JPanel {
 		g.fillRect((x * componentSize), (y * componentSize), componentSize, componentSize);
 	}
 
-	public void addAnimTileModel(AnimTileModel data) {
+	public void addAnimTileModel(GfxByteModel data) {
 		try {
 			ByteArrayInputStream is = new ByteArrayInputStream(data.getGfx());
 			BufferedImage image = ImageIO.read(is);

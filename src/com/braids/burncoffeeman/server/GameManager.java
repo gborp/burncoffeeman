@@ -11,12 +11,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.braids.burncoffeeman.common.Activity;
-import com.braids.burncoffeeman.common.AnimTileModel;
 import com.braids.burncoffeeman.common.AnimTilePhaseType;
 import com.braids.burncoffeeman.common.BombPhases;
 import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.Direction;
 import com.braids.burncoffeeman.common.Fire;
+import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.Helper;
 import com.braids.burncoffeeman.common.Item;
@@ -24,6 +24,7 @@ import com.braids.burncoffeeman.common.LevelModel;
 import com.braids.burncoffeeman.common.LevelTileModel;
 import com.braids.burncoffeeman.common.PlayerModel;
 import com.braids.burncoffeeman.common.Wall;
+import com.braids.burncoffeeman.common.GfxByteModel.GfxByteModelType;
 
 public class GameManager {
 
@@ -187,7 +188,8 @@ public class GameManager {
 	}
 
 	private void sendGfx(String groupName, AnimTilePhaseType phaseType) {
-		AnimTileModel atm = new AnimTileModel();
+		GfxByteModel atm = new GfxByteModel();
+		atm.setType(GfxByteModelType.ANIM_TILE);
 		atm.setGroupName(groupName);
 		atm.setPhaseType(phaseType);
 		atm.setGfx(gtm.getOriginalImage(groupName, phaseType));
