@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.CountDownLatch;
 
-import com.braids.burncoffeeman.common.AnimTileModel;
+import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.Helper;
@@ -125,7 +125,7 @@ public class CommunicationClient {
 							case BOMB:
 								offset += processBombModel(packetBuffer, offset);
 								break;
-							case ANIM_TILE_MODEL:
+							case GFX_BYTE_MODEL:
 								offset += processAnimTileModel(packetBuffer, offset);
 								break;
 							case PLAYER_INFO:
@@ -171,7 +171,7 @@ public class CommunicationClient {
 		}
 
 		private int processAnimTileModel(byte[] bytes, int offset) {
-			AnimTileModel data = new AnimTileModel();
+			GfxByteModel data = new GfxByteModel();
 			int resultOffsetIncrement = data.decode(bytes, offset);
 
 			mainClient.addAnimTileModel(data);

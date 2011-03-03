@@ -2,18 +2,30 @@ package com.braids.burncoffeeman.common;
 
 import java.nio.ByteBuffer;
 
-public class AnimTileModel implements CoderDecoder {
+public class GfxByteModel implements CoderDecoder {
 
+	public static enum GfxByteModelType {
+		ANIM_TILE, BOMB, BURNING, FIRE, ITEMS, WALL
+	}
+
+	GfxByteModelType  type;
 	String            groupName;
 	AnimTilePhaseType phaseType;
 	byte[]            gfx;
 
 	public byte[] code() {
-		byte[] nameAsBytes = groupName.getBytes(Constants.UTF_8);
+		byte[] nameAsBytes;
+		if (groupName == null) {
+			nameAsBytes = new byte[0];
+		} else {
+			nameAsBytes = groupName.getBytes(Constants.UTF_8);
+		}
 
-		ByteBuffer bb = ByteBuffer.allocate(1 + 1 + nameAsBytes.length + 1 + 2 + gfx.length);
+		ByteBuffer bb = ByteBuffer.allocate(1 + 1 + 1 + nameAsBytes.length + 1 + 2 + gfx.length);
 
-		bb.put((byte) PacketMessageType.ANIM_TILE_MODEL.ordinal());
+		bb.put((byte) PacketMessageType.GFX_BYTE_MODEL.ordinal());
+
+		bb.put((byte) type.ordinal());
 
 		bb.put((byte) nameAsBytes.length);
 		bb.put(nameAsBytes);
@@ -30,8 +42,13 @@ public class AnimTileModel implements CoderDecoder {
 
 		int initialOffset = offset;
 
+		type = GfxByteModelType.values()[bytes[offset]];
+		offset++;
+
 		int nameAsBytesSize = Helper.byteToInt(bytes[offset]);
-		groupName = new String(bytes, offset + 1, nameAsBytesSize, Constants.UTF_8);
+		if (nameAsBytesSize > 0) {
+			groupName = new String(bytes, offset + 1, nameAsBytesSize, Constants.UTF_8);
+		}
 		offset += 1 + nameAsBytesSize;
 
 		phaseType = AnimTilePhaseType.values()[bytes[offset]];
@@ -66,6 +83,14 @@ public class AnimTileModel implements CoderDecoder {
 
 	public void setGfx(byte[] gfx) {
 		this.gfx = gfx;
+	}
+
+	public GfxByteModelType getType() {
+		return this.type;
+	}
+
+	public void setType(GfxByteModelType type) {
+		this.type = type;
 	}
 
 }
