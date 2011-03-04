@@ -3,18 +3,17 @@ package com.braids.burncoffeeman.client;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collection;
 
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import com.braids.burncoffeeman.common.Activity;
-import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.Constants;
+import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.GraphicsTemplateManager;
+import com.braids.burncoffeeman.common.Helper;
 import com.braids.burncoffeeman.common.LevelModel;
 import com.braids.burncoffeeman.common.LevelTileModel;
 import com.braids.burncoffeeman.common.PlayerModel;
@@ -109,37 +108,19 @@ public class Displayer extends JPanel {
 	}
 
 	private void drawTile(Graphics g, int x, int y, int componentSize, LevelTileModel tile) {
-		switch (tile.getWall()) {
-			case GROUND:
-				if (tile.hasFire()) {
-					g.setColor(Color.YELLOW);
-				} else {
-					g.setColor(Color.GREEN);
-				}
-				break;
-			case WALL:
-				g.setColor(Color.DARK_GRAY);
-				break;
-			case BREAKABLE_WALL:
-				if (tile.hasFire()) {
-					g.setColor(Color.RED);
-				} else {
-					g.setColor(Color.BLUE);
-				}
-				break;
-		}
-		g.fillRect((x * componentSize), (y * componentSize), componentSize, componentSize);
-	}
 
-	public void addAnimTileModel(GfxByteModel data) {
-		try {
-			ByteArrayInputStream is = new ByteArrayInputStream(data.getGfx());
-			BufferedImage image = ImageIO.read(is);
-			is.close();
-			gtm.loadAnim(image, data.getGroupName(), data.getPhaseType());
-		} catch (IOException ex) {
-			ex.printStackTrace();
+		g.drawImage(ScaledGfxHelper.getWall(componentSize, tile.getWall()), (x * componentSize), (y * componentSize), null);
+		if (tile.hasFire()) {
+			g.setColor(Color.YELLOW);
+			g.fillRect((x * componentSize), (y * componentSize), componentSize, componentSize);
 		}
 	}
 
+	public void addAnimTileModel(GfxByteModel data) throws IOException {
+		gtm.loadAnim(Helper.loadImageFromByteArray(data.getGfx()), data.getGroupName(), data.getPhaseType());
+	}
+
+	public void setWallImage(GfxByteModel data) throws IOException {
+		gtm.loadWalls(Helper.loadImageFromByteArray(data.getGfx()));
+	}
 }

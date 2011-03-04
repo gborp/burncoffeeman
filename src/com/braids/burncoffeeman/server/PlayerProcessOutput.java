@@ -36,8 +36,20 @@ public class PlayerProcessOutput {
 
 	public void append(byte[] data) {
 		synchronized (bbOutgoing) {
-			bbOutgoing.put((byte) (data.length / 256));
-			bbOutgoing.put((byte) (data.length & 255));
+			if (data.length > 256 * 256 * 256 - 1) {
+				throw new RuntimeException("Data too big in PlayerProcessOutput.append");
+			}
+			if (data.length > 256 * 256 - 2) {
+				bbOutgoing.put((byte) (255));
+				bbOutgoing.put((byte) (255));
+				bbOutgoing.put((byte) (data.length >> 16));
+				bbOutgoing.put((byte) (data.length >> 8));
+				bbOutgoing.put((byte) (data.length & 255));
+			} else {
+				bbOutgoing.put((byte) (data.length >> 8));
+				bbOutgoing.put((byte) (data.length & 255));
+			}
+
 			bbOutgoing.put(data);
 		}
 		synchronized (bbOutgoing) {

@@ -8,10 +8,12 @@ public class GfxByteModel implements CoderDecoder {
 		ANIM_TILE, BOMB, BURNING, FIRE, ITEMS, WALL
 	}
 
-	GfxByteModelType  type;
-	String            groupName;
-	AnimTilePhaseType phaseType;
-	byte[]            gfx;
+	private static final byte UNKNOWN_PHASE_TYPE = 100;
+
+	GfxByteModelType          type;
+	String                    groupName;
+	AnimTilePhaseType         phaseType;
+	byte[]                    gfx;
 
 	public byte[] code() {
 		byte[] nameAsBytes;
@@ -28,9 +30,15 @@ public class GfxByteModel implements CoderDecoder {
 		bb.put((byte) type.ordinal());
 
 		bb.put((byte) nameAsBytes.length);
-		bb.put(nameAsBytes);
+		if (nameAsBytes.length > 0) {
+			bb.put(nameAsBytes);
+		}
 
-		bb.put((byte) phaseType.ordinal());
+		if (phaseType != null) {
+			bb.put((byte) phaseType.ordinal());
+		} else {
+			bb.put(UNKNOWN_PHASE_TYPE);
+		}
 
 		Helper.putShortIntToBuffer(bb, gfx.length);
 		bb.put(gfx);
@@ -51,7 +59,9 @@ public class GfxByteModel implements CoderDecoder {
 		}
 		offset += 1 + nameAsBytesSize;
 
-		phaseType = AnimTilePhaseType.values()[bytes[offset]];
+		if (bytes[offset] != UNKNOWN_PHASE_TYPE) {
+			phaseType = AnimTilePhaseType.values()[bytes[offset]];
+		}
 		offset += 1;
 
 		int gfxBytesSize = Helper.bytesToInt(bytes[offset], bytes[offset + 1]);
