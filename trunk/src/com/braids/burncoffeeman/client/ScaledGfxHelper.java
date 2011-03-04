@@ -1,6 +1,7 @@
 package com.braids.burncoffeeman.client;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
@@ -10,14 +11,35 @@ import com.braids.burncoffeeman.common.AnimTilePhaseType;
 import com.braids.burncoffeeman.common.Direction;
 import com.braids.burncoffeeman.common.GfxHelper;
 import com.braids.burncoffeeman.common.GraphicsTemplateManager;
+import com.braids.burncoffeeman.common.Wall;
 
 public class ScaledGfxHelper {
 
 	private static int                                actualSize = -1;
 	private static HashMap<PlayerSlot, BufferedImage> mapPlayer  = new HashMap<PlayerSlot, BufferedImage>();
+	private static HashMap<Wall, Image>               mapWall    = new HashMap<Wall, Image>();
 
 	private static void clearCache() {
 		mapPlayer.clear();
+		mapWall.clear();
+	}
+
+	public static Image getWall(int size, Wall wall) {
+		if (actualSize != size) {
+			actualSize = size;
+			clearCache();
+		}
+
+		Image result = mapWall.get(wall);
+
+		if (result == null) {
+			GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
+			result = gtm.getWall(wall).getScaledInstance(size + 1, size + 1, Image.SCALE_REPLICATE);
+
+			mapWall.put(wall, result);
+		}
+
+		return result;
 	}
 
 	public static BufferedImage getPlayer(int size, Color ownColor1, Color ownColor2, String groupName, Activity activityType, Direction direction,

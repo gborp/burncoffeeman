@@ -67,7 +67,12 @@ public class GameManager {
 		timerMainCycle.scheduleAtFixedRate(new TimerTask() {
 
 			public void run() {
-				mainCycle();
+				try {
+					mainCycle();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+					System.exit(-1);
+				}
 			}
 		}, Constants.MAIN_CYCLE_PERIOD, Constants.MAIN_CYCLE_PERIOD);
 	}
@@ -127,7 +132,7 @@ public class GameManager {
 		}
 	}
 
-	public void mainCycle() {
+	public void mainCycle() throws IOException {
 		bbOut.clear();
 		switch (gamePhase) {
 			case PRE_MATCH:
@@ -155,7 +160,7 @@ public class GameManager {
 		}
 	}
 
-	public void startingMatchCycle() {
+	public void startingMatchCycle() throws IOException {
 		if (!mapSentOnce) {
 			sendMap();
 		}
@@ -172,14 +177,20 @@ public class GameManager {
 			}
 
 			for (String groupName : setHeadGroups) {
-				sendGfx(groupName, AnimTilePhaseType.HEAD);
+				sendAnimGfx(groupName, AnimTilePhaseType.HEAD);
 			}
 			for (String groupName : setBodyGroups) {
-				sendGfx(groupName, AnimTilePhaseType.BODY);
+				sendAnimGfx(groupName, AnimTilePhaseType.BODY);
 			}
 			for (String groupName : setLegsGroups) {
-				sendGfx(groupName, AnimTilePhaseType.LEGS);
+				sendAnimGfx(groupName, AnimTilePhaseType.LEGS);
 			}
+
+			sendOtherGfx(GfxByteModelType.BOMB, "gfx/tile-bomb.png");
+			sendOtherGfx(GfxByteModelType.BURNING, "gfx/tile-burning.png");
+			sendOtherGfx(GfxByteModelType.FIRE, "gfx/tile-fire.png");
+			// sendOtherGfx(GfxByteModelType.ITEMS, "gfx/tile-items.png");
+			sendOtherGfx(GfxByteModelType.WALL, "gfx/tile-walls1.png");
 		}
 
 		if (mapSentOnce && gfxSentOnce) {
@@ -187,7 +198,14 @@ public class GameManager {
 		}
 	}
 
-	private void sendGfx(String groupName, AnimTilePhaseType phaseType) {
+	private void sendOtherGfx(GfxByteModelType type, String fileName) throws IOException {
+		GfxByteModel atm = new GfxByteModel();
+		atm.setType(type);
+		atm.setGfx(Helper.getFileAsByteArray(new File(fileName)));
+		bbOut.put(atm.code());
+	}
+
+	private void sendAnimGfx(String groupName, AnimTilePhaseType phaseType) {
 		GfxByteModel atm = new GfxByteModel();
 		atm.setType(GfxByteModelType.ANIM_TILE);
 		atm.setGroupName(groupName);

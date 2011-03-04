@@ -8,10 +8,10 @@ import java.util.TimerTask;
 
 import javax.swing.JFrame;
 
-import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.ClientInputModel;
 import com.braids.burncoffeeman.common.Constants;
+import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.LevelModel;
 import com.braids.burncoffeeman.common.PlayerInfoModel;
@@ -31,7 +31,6 @@ public class MainClient {
 	public MainClient() throws IOException {
 
 		GraphicsTemplateManager.init();
-		GraphicsTemplateManager.getInstance().loadTiles();
 
 		levelModel = new LevelModel(Constants.LEVEL_WIDTH, Constants.LEVEL_HEIGHT);
 		players = new Players();
@@ -133,8 +132,12 @@ public class MainClient {
 		bombs.setBombModel(data);
 	}
 
-	public void addAnimTileModel(GfxByteModel data) {
+	public void addAnimTileModel(GfxByteModel data) throws IOException {
 		displayer.addAnimTileModel(data);
+	}
+
+	public void setWallImage(GfxByteModel data) throws IOException {
+		displayer.setWallImage(data);
 	}
 
 }

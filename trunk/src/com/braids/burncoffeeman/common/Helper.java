@@ -1,6 +1,14 @@
 package com.braids.burncoffeeman.common;
 
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import javax.imageio.ImageIO;
 
 public class Helper {
 
@@ -37,5 +45,20 @@ public class Helper {
 
 	public static int getCenterOfTileY(int componentY) {
 		return (int) (componentY * Constants.COMPONENT_SIZE_IN_VIRTUAL + 0.5 * Constants.COMPONENT_SIZE_IN_VIRTUAL);
+	}
+
+	public static byte[] getFileAsByteArray(File file) throws IOException {
+		BufferedInputStream is = new BufferedInputStream(new FileInputStream(file));
+		byte[] bytes = new byte[(int) file.length()];
+		is.read(bytes);
+		is.close();
+		return bytes;
+	}
+
+	public static BufferedImage loadImageFromByteArray(byte[] bytes) throws IOException {
+		ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+		BufferedImage image = ImageIO.read(is);
+		is.close();
+		return image;
 	}
 }

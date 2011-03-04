@@ -7,9 +7,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.CountDownLatch;
 
-import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.Constants;
+import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.Helper;
 import com.braids.burncoffeeman.common.LevelTileModel;
 import com.braids.burncoffeeman.common.PacketMessageType;
@@ -97,17 +97,31 @@ public class CommunicationClient {
 			started.countDown();
 		}
 
+		private void readToFull(byte[] buffer, int size) throws IOException {
+			int offset = 0;
+			int read = 0;
+			while (offset < size && (read = bis.read(buffer, offset, size - offset)) != -1) {
+				offset += read;
+			}
+		}
+
 		public void run() {
 			try {
-				byte[] packetSizeBuffer = new byte[2];
+				byte[] packetSizeBuffer = new byte[3];
 				byte[] packetBuffer = new byte[Constants.MAX_PACKET_SIZE];
 
 				while (!shutdown) {
-					bis.read(packetSizeBuffer);
+					readToFull(packetSizeBuffer, 2);
 					statisticsInputBytes += 2;
-
 					int packetSize = Helper.bytesToInt(packetSizeBuffer[0], packetSizeBuffer[1]);
-					bis.read(packetBuffer, 0, packetSize);
+
+					if (packetSize == 0xffff) {
+						readToFull(packetSizeBuffer, 3);
+						statisticsInputBytes += 3;
+						packetSize = (int) ((packetSizeBuffer[0] & 0xFF) << 16) + ((packetSizeBuffer[1] & 0xFF) << 8) + (int) (packetSizeBuffer[2] & 0xFF);
+					}
+
+					readToFull(packetBuffer, packetSize);
 					statisticsInputBytes += packetSize;
 
 					int offset = 0;
@@ -115,6 +129,7 @@ public class CommunicationClient {
 						byte type = packetBuffer[offset];
 						offset++;
 						PacketMessageType messageType = PacketMessageType.values()[type];
+
 						switch (messageType) {
 							case LEVEL_TILE:
 								offset += processLevelTile(packetBuffer, offset);
@@ -170,11 +185,18 @@ public class CommunicationClient {
 			return resultOffsetIncrement;
 		}
 
-		private int processAnimTileModel(byte[] bytes, int offset) {
+		private int processAnimTileModel(byte[] bytes, int offset) throws IOException {
 			GfxByteModel data = new GfxByteModel();
 			int resultOffsetIncrement = data.decode(bytes, offset);
 
-			mainClient.addAnimTileModel(data);
+			switch (data.getType()) {
+				case ANIM_TILE:
+					mainClient.addAnimTileModel(data);
+					break;
+				case WALL:
+					mainClient.setWallImage(data);
+					break;
+			}
 
 			return resultOffsetIncrement;
 		}

@@ -2,9 +2,7 @@ package com.braids.burncoffeeman.common;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +24,8 @@ public class GraphicsTemplateManager {
 	private List<AnimTilePhase>               lstAnimTilePhaseLegs;
 
 	private HashMap<AnimOriginalSlot, byte[]> mapOriginalImages;
+
+	private HashMap<Wall, BufferedImage>      mapWallTiles;
 
 	private static class AnimOriginalSlot {
 
@@ -60,6 +60,8 @@ public class GraphicsTemplateManager {
 		lstGroupsBody = new ArrayList<String>();
 		lstGroupsLegs = new ArrayList<String>();
 		mapOriginalImages = new HashMap<AnimOriginalSlot, byte[]>();
+
+		mapWallTiles = new HashMap<Wall, BufferedImage>();
 	}
 
 	public void loadAnimOriginals(File dir) {
@@ -76,12 +78,7 @@ public class GraphicsTemplateManager {
 					slot.groupName = groupName;
 					slot.phaseType = phaseType;
 
-					BufferedInputStream is = new BufferedInputStream(new FileInputStream(file));
-					byte[] bytes = new byte[(int) file.length()];
-					is.read(bytes);
-					is.close();
-
-					mapOriginalImages.put(slot, bytes);
+					mapOriginalImages.put(slot, Helper.getFileAsByteArray(file));
 
 				} catch (IOException ex) {
 					ex.printStackTrace();
@@ -289,26 +286,37 @@ public class GraphicsTemplateManager {
 		return lstGroupsLegs;
 	}
 
-	public void loadTiles() throws IOException {
-		loadFire();
-
-	}
-
 	private static BufferedImage[] splitImage(BufferedImage img, int columns, int rows, boolean hasSeparator) {
 		int width = img.getWidth() / columns;
 		int height = img.getHeight() / rows;
 		int num = 0;
+		int correction = hasSeparator ? 1 : 0;
+
 		BufferedImage result[] = new BufferedImage[width * height];
 		for (int y = 0; y < rows; y++) {
 			for (int x = 0; x < columns; x++) {
 				result[num] = new BufferedImage(width, height, img.getType());
 				Graphics2D g = result[num].createGraphics();
-				g.drawImage(img, 0, 0, width, height, width * x, height * y, width * x + width, height * y + height, null);
+				g.drawImage(img, 0, 0, width, height, width * x - correction, height * y - correction, width * x + width, height * y + height, null);
 				g.dispose();
 				num++;
 			}
 		}
 		return result;
+	}
+
+	public void loadWalls(BufferedImage image) throws IOException {
+		BufferedImage[] images = splitImage(image, 1, 7, true);
+
+		int i = 0;
+		for (Wall w : Wall.values()) {
+			mapWallTiles.put(w, images[i]);
+			i++;
+		}
+	}
+
+	public BufferedImage getWall(Wall wall) {
+		return mapWallTiles.get(wall);
 	}
 
 	private void loadFire() throws IOException {
