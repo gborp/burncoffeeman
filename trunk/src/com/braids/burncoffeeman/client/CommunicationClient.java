@@ -13,6 +13,7 @@ import com.braids.burncoffeeman.common.GfxByteModel;
 import com.braids.burncoffeeman.common.Helper;
 import com.braids.burncoffeeman.common.LevelTileModel;
 import com.braids.burncoffeeman.common.PacketMessageType;
+import com.braids.burncoffeeman.common.PlayerInfoModel;
 import com.braids.burncoffeeman.common.PlayerModel;
 
 public class CommunicationClient {
@@ -144,13 +145,12 @@ public class CommunicationClient {
 								offset += processAnimTileModel(packetBuffer, offset);
 								break;
 							case PLAYER_INFO:
-								// TODO
+								offset += processPlayerInfo(packetBuffer, offset);
 								break;
 							default:
 								System.out.println("CommunicationClient invalid input: " + messageType);
 						}
 					}
-					mainClient.refreshDisplay();
 				}
 
 			} catch (IOException ex) {
@@ -163,6 +163,15 @@ public class CommunicationClient {
 			int resultOffsetIncrement = data.decode(bytes, offset);
 
 			mainClient.getLevelModel().setTile(data);
+
+			return resultOffsetIncrement;
+		}
+
+		private int processPlayerInfo(byte[] bytes, int offset) {
+			PlayerInfoModel data = new PlayerInfoModel();
+			int resultOffsetIncrement = data.decode(bytes, offset);
+
+			mainClient.setPlayerInfoModel(data);
 
 			return resultOffsetIncrement;
 		}

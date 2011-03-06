@@ -15,7 +15,9 @@ public class Constants {
 
 	public static final int     MAX_PACKET_SIZE                         = 256 * 1024;
 
-	public static final int     MAIN_CYCLE_PERIOD                       = 40;
+	public static final int     MAIN_CYCLE_PER_SEC                      = 25;
+
+	public static final int     MAIN_CYCLE_PERIOD                       = 1000 / MAIN_CYCLE_PER_SEC;
 
 	public static final Charset UTF_8                                   = Charset.forName("utf-8");
 
@@ -47,4 +49,6 @@ public class Constants {
 	public static final int     BOMB_DETONATION_ITERATIONS              = 60;
 
 	public static final int     FIRE_TIMOUT                             = 20;
+
+	public static final int     NOONES_BOMB                             = 99;
 }
