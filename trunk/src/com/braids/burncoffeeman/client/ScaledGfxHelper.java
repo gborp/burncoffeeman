@@ -3,12 +3,15 @@ package com.braids.burncoffeeman.client;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.braids.burncoffeeman.common.Activity;
 import com.braids.burncoffeeman.common.AnimTilePhase;
 import com.braids.burncoffeeman.common.AnimTilePhaseType;
 import com.braids.burncoffeeman.common.Direction;
+import com.braids.burncoffeeman.common.Fire;
 import com.braids.burncoffeeman.common.GfxHelper;
 import com.braids.burncoffeeman.common.GraphicsTemplateManager;
 import com.braids.burncoffeeman.common.Wall;
@@ -18,10 +21,12 @@ public class ScaledGfxHelper {
 	private static int                                actualSize = -1;
 	private static HashMap<PlayerSlot, BufferedImage> mapPlayer  = new HashMap<PlayerSlot, BufferedImage>();
 	private static HashMap<Wall, Image>               mapWall    = new HashMap<Wall, Image>();
+	private static HashMap<Fire, List<Image>>         mapFire    = new HashMap<Fire, List<Image>>();
 
 	private static void clearCache() {
 		mapPlayer.clear();
 		mapWall.clear();
+		mapFire.clear();
 	}
 
 	public static Image getWall(int size, Wall wall) {
@@ -40,6 +45,26 @@ public class ScaledGfxHelper {
 		}
 
 		return result;
+	}
+
+	public static Image getFire(int size, Fire fire, int phase) {
+		if (actualSize != size) {
+			actualSize = size;
+			clearCache();
+		}
+
+		List<Image> result = mapFire.get(fire);
+
+		if (result == null) {
+			GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
+			result = new ArrayList<Image>();
+			for (BufferedImage origFire : gtm.getFire(fire)) {
+				result.add(origFire.getScaledInstance(size + 1, size + 1, Image.SCALE_REPLICATE));
+			}
+			mapFire.put(fire, result);
+		}
+
+		return result.get(phase);
 	}
 
 	public static BufferedImage getPlayer(int size, Color ownColor1, Color ownColor2, String groupName, Activity activityType, Direction direction,

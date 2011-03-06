@@ -111,8 +111,8 @@ public class Displayer extends JPanel {
 
 		g.drawImage(ScaledGfxHelper.getWall(componentSize, tile.getWall()), (x * componentSize), (y * componentSize), null);
 		if (tile.hasFire()) {
-			g.setColor(Color.YELLOW);
-			g.fillRect((x * componentSize), (y * componentSize), componentSize, componentSize);
+			// TODO fire-anim-phase
+			g.drawImage(ScaledGfxHelper.getFire(componentSize, tile.getFire(), 3), (x * componentSize), (y * componentSize), null);
 		}
 	}
 
@@ -122,5 +122,9 @@ public class Displayer extends JPanel {
 
 	public void setWallImage(GfxByteModel data) throws IOException {
 		gtm.loadWalls(Helper.loadImageFromByteArray(data.getGfx()));
+	}
+
+	public void setFireImage(GfxByteModel data) throws IOException {
+		gtm.loadFires(Helper.loadImageFromByteArray(data.getGfx()));
 	}
 }

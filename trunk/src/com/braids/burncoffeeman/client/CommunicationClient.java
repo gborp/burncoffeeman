@@ -196,6 +196,9 @@ public class CommunicationClient {
 				case WALL:
 					mainClient.setWallImage(data);
 					break;
+				case FIRE:
+					mainClient.setFireImage(data);
+					break;
 			}
 
 			return resultOffsetIncrement;

@@ -140,4 +140,7 @@ public class MainClient {
 		displayer.setWallImage(data);
 	}
 
+	public void setFireImage(GfxByteModel data) throws IOException {
+		displayer.setFireImage(data);
+	}
 }
