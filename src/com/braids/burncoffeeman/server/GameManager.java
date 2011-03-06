@@ -189,7 +189,7 @@ public class GameManager {
 			sendOtherGfx(GfxByteModelType.BOMB, "gfx/tile-bomb.png");
 			sendOtherGfx(GfxByteModelType.BURNING, "gfx/tile-burning.png");
 			sendOtherGfx(GfxByteModelType.FIRE, "gfx/tile-fire.png");
-			// sendOtherGfx(GfxByteModelType.ITEMS, "gfx/tile-items.png");
+			sendOtherGfx(GfxByteModelType.ITEMS, "gfx/tile-items.png");
 			sendOtherGfx(GfxByteModelType.WALL, "gfx/tile-walls1.png");
 		}
 

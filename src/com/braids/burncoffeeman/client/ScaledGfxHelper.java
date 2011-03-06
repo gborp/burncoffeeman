@@ -2,7 +2,11 @@ package com.braids.burncoffeeman.client;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageProducer;
+import java.awt.image.RGBImageFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +22,15 @@ import com.braids.burncoffeeman.common.Wall;
 
 public class ScaledGfxHelper {
 
-	private static int                                actualSize = -1;
-	private static HashMap<PlayerSlot, BufferedImage> mapPlayer  = new HashMap<PlayerSlot, BufferedImage>();
-	private static HashMap<Wall, Image>               mapWall    = new HashMap<Wall, Image>();
-	private static HashMap<Fire, List<Image>>         mapFire    = new HashMap<Fire, List<Image>>();
+	private static int                                actualSize    = -1;
+	private static HashMap<PlayerSlot, BufferedImage> mapPlayer     = new HashMap<PlayerSlot, BufferedImage>();
+	private static HashMap<Wall, Image>               mapWall       = new HashMap<Wall, Image>();
+	private static HashMap<FireSlot, List<Image>>     mapFire       = new HashMap<FireSlot, List<Image>>();
+
+	private static ColorFilter                        colorFilter   = new ColorFilter();
+
+	private static final Color                        fireKeyColor1 = new Color(255, 0, 255);
+	private static final Color                        fireKeyColor2 = new Color(0, 0, 0);
 
 	private static void clearCache() {
 		mapPlayer.clear();
@@ -47,24 +56,56 @@ public class ScaledGfxHelper {
 		return result;
 	}
 
-	public static Image getFire(int size, Fire fire, int phase) {
+	public static Image getFire(int size, Fire fire, Color ownColor1, Color ownColor2, int phase) {
 		if (actualSize != size) {
 			actualSize = size;
 			clearCache();
 		}
 
-		List<Image> result = mapFire.get(fire);
+		FireSlot slot = new FireSlot();
+		slot.fire = fire;
+		slot.ownColor1 = ownColor1;
+		slot.ownColor2 = ownColor2;
+
+		List<Image> result = mapFire.get(slot);
 
 		if (result == null) {
 			GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
+
+			colorFilter.fromColor1 = fireKeyColor1.getRGB();
+			colorFilter.toColor1 = ownColor1.getRGB();
+
+			colorFilter.fromColor2 = fireKeyColor2.getRGB();
+			colorFilter.toColor2 = ownColor2.getRGB();
+
 			result = new ArrayList<Image>();
 			for (BufferedImage origFire : gtm.getFire(fire)) {
-				result.add(origFire.getScaledInstance(size + 1, size + 1, Image.SCALE_REPLICATE));
+				ImageProducer ip = new FilteredImageSource(origFire.getSource(), colorFilter);
+				Image coloredImage = Toolkit.getDefaultToolkit().createImage(ip);
+				result.add(coloredImage.getScaledInstance(size + 1, size + 1, Image.SCALE_REPLICATE));
 			}
-			mapFire.put(fire, result);
+			mapFire.put(slot, result);
 		}
 
 		return result.get(phase);
+	}
+
+	private static class ColorFilter extends RGBImageFilter {
+
+		public int fromColor1;
+		public int toColor1;
+		public int fromColor2;
+		public int toColor2;
+
+		public int filterRGB(int x, int y, int rgb) {
+			if (rgb == fromColor1) {
+				return toColor1;
+			} else if (rgb == fromColor2) {
+				return toColor2;
+			}
+			return rgb;
+		}
+
 	}
 
 	public static BufferedImage getPlayer(int size, Color ownColor1, Color ownColor2, String groupName, Activity activityType, Direction direction,
@@ -118,5 +159,21 @@ public class ScaledGfxHelper {
 			return ownColor1.hashCode() ^ ownColor2.hashCode() ^ groupName.hashCode() ^ activityType.hashCode() ^ direction.hashCode() ^ (phaseNumber + 1);
 		}
 
+	}
+
+	private static class FireSlot {
+
+		Color ownColor1;
+		Color ownColor2;
+		Fire  fire;
+
+		public boolean equals(Object obj) {
+			FireSlot other = (FireSlot) obj;
+			return ownColor1.equals(other.ownColor1) && ownColor2.equals(other.ownColor2) && fire.equals(other.fire);
+		}
+
+		public int hashCode() {
+			return ownColor1.hashCode() ^ ownColor2.hashCode() ^ fire.hashCode();
+		}
 	}
 }

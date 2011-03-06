@@ -120,10 +120,6 @@ public class MainClient {
 		return levelModel;
 	}
 
-	public void refreshDisplay() {
-		displayer.repaint();
-	}
-
 	public void setPlayerModel(PlayerModel data) {
 		players.setPlayerModel(data);
 	}
@@ -142,5 +138,9 @@ public class MainClient {
 
 	public void setFireImage(GfxByteModel data) throws IOException {
 		displayer.setFireImage(data);
+	}
+
+	public void setPlayerInfoModel(PlayerInfoModel data) {
+		players.setPlayerInfoModel(data);
 	}
 }

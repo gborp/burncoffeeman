@@ -1,5 +1,6 @@
 package com.braids.burncoffeeman.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -23,6 +24,6 @@ public class Bombs {
 	}
 
 	public synchronized Collection<BombModel> getBombModels() {
-		return mapBombModel.values();
+		return new ArrayList<BombModel>(mapBombModel.values());
 	}
 }

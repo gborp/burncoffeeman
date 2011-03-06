@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 public class PlayerInfoModel implements CoderDecoder {
 
+	int    playerId;
 	String name;
 	Color  color1;
 	Color  color2;
@@ -19,7 +20,7 @@ public class PlayerInfoModel implements CoderDecoder {
 		byte[] gfxLegsGroupAsBytes = gfxLegsGroup.getBytes(Constants.UTF_8);
 
 		ByteBuffer bb = ByteBuffer.allocate(1 + 3 + 3 + 1 + nameAsBytes.length + 1 + gfxHeadGroupAsBytes.length + 1 + gfxBodyGroupAsBytes.length + 1
-		        + gfxLegsGroupAsBytes.length);
+		        + gfxLegsGroupAsBytes.length + 1);
 
 		bb.put((byte) PacketMessageType.PLAYER_INFO.ordinal());
 
@@ -41,6 +42,8 @@ public class PlayerInfoModel implements CoderDecoder {
 
 		bb.put((byte) gfxLegsGroupAsBytes.length);
 		bb.put(gfxLegsGroupAsBytes);
+
+		bb.put((byte) playerId);
 
 		return bb.array();
 	}
@@ -68,6 +71,10 @@ public class PlayerInfoModel implements CoderDecoder {
 		int gfxLegsGroupAsBytesSize = Helper.byteToInt(bytes[offset]);
 		gfxLegsGroup = new String(bytes, offset + 1, gfxLegsGroupAsBytesSize, Constants.UTF_8);
 		offset += 1 + gfxLegsGroupAsBytesSize;
+
+		playerId = bytes[offset];
+
+		offset++;
 
 		return offset - initialOffset;
 	}
@@ -118,6 +125,14 @@ public class PlayerInfoModel implements CoderDecoder {
 
 	public void setGfxLegsGroup(String gfxLegsGroup) {
 		this.gfxLegsGroup = gfxLegsGroup;
+	}
+
+	public int getPlayerId() {
+		return this.playerId;
+	}
+
+	public void setPlayerId(int playerId) {
+		this.playerId = playerId;
 	}
 
 }
