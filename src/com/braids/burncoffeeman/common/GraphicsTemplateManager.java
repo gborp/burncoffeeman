@@ -13,19 +13,20 @@ import javax.imageio.ImageIO;
 
 public class GraphicsTemplateManager {
 
-	private static GraphicsTemplateManager    singleton;
+	private static GraphicsTemplateManager     singleton;
 
-	private List<String>                      lstGroupsHead;
-	private List<String>                      lstGroupsBody;
-	private List<String>                      lstGroupsLegs;
+	private List<String>                       lstGroupsHead;
+	private List<String>                       lstGroupsBody;
+	private List<String>                       lstGroupsLegs;
 
-	private List<AnimTilePhase>               lstAnimTilePhaseHead;
-	private List<AnimTilePhase>               lstAnimTilePhaseBody;
-	private List<AnimTilePhase>               lstAnimTilePhaseLegs;
+	private List<AnimTilePhase>                lstAnimTilePhaseHead;
+	private List<AnimTilePhase>                lstAnimTilePhaseBody;
+	private List<AnimTilePhase>                lstAnimTilePhaseLegs;
 
-	private HashMap<AnimOriginalSlot, byte[]> mapOriginalImages;
+	private HashMap<AnimOriginalSlot, byte[]>  mapOriginalImages;
 
-	private HashMap<Wall, BufferedImage>      mapWallTiles;
+	private HashMap<Wall, BufferedImage>       mapWallTiles;
+	private HashMap<Fire, List<BufferedImage>> mapFire;
 
 	private static class AnimOriginalSlot {
 
@@ -62,6 +63,7 @@ public class GraphicsTemplateManager {
 		mapOriginalImages = new HashMap<AnimOriginalSlot, byte[]>();
 
 		mapWallTiles = new HashMap<Wall, BufferedImage>();
+		mapFire = new HashMap<Fire, List<BufferedImage>>();
 	}
 
 	public void loadAnimOriginals(File dir) {
@@ -287,17 +289,38 @@ public class GraphicsTemplateManager {
 	}
 
 	private static BufferedImage[] splitImage(BufferedImage img, int columns, int rows, boolean hasSeparator) {
-		int width = img.getWidth() / columns;
-		int height = img.getHeight() / rows;
+
 		int num = 0;
-		int correction = hasSeparator ? 1 : 0;
+
+		int width;
+		int height;
+
+		if (hasSeparator) {
+			width = (img.getWidth() - columns + 1) / columns;
+			height = (img.getHeight() - rows + 1) / rows;
+		} else {
+			width = img.getWidth() / columns;
+			height = img.getHeight() / rows;
+		}
 
 		BufferedImage result[] = new BufferedImage[width * height];
 		for (int y = 0; y < rows; y++) {
 			for (int x = 0; x < columns; x++) {
 				result[num] = new BufferedImage(width, height, img.getType());
 				Graphics2D g = result[num].createGraphics();
-				g.drawImage(img, 0, 0, width, height, width * x - correction, height * y - correction, width * x + width, height * y + height, null);
+				int xSeparatorOffset = 0;
+				int ySeparatorOffset = 0;
+				if (hasSeparator) {
+					xSeparatorOffset = x;
+					ySeparatorOffset = y;
+				}
+
+				int dx1 = width * x + xSeparatorOffset;
+				int dy1 = height * y + ySeparatorOffset;
+				int dx2 = dx1 + width;
+				int dy2 = dy1 + height;
+
+				g.drawImage(img, 0, 0, width, height, dx1, dy1, dx2, dy2, null);
 				g.dispose();
 				num++;
 			}
@@ -315,12 +338,29 @@ public class GraphicsTemplateManager {
 		}
 	}
 
+	public void loadFires(BufferedImage image) throws IOException {
+		BufferedImage[] images = splitImage(image, 5, 3, true);
+
+		int offset = 0;
+		offset += loadFire(Fire.HORIZONTAL, images, offset);
+		offset += loadFire(Fire.VERTICAL, images, offset);
+		offset += loadFire(Fire.CROSSING, images, offset);
+	}
+
+	private int loadFire(Fire fire, BufferedImage[] images, int offset) {
+		ArrayList<BufferedImage> lstPhases = new ArrayList<BufferedImage>(5);
+		for (int i = 0; i < 5; i++) {
+			lstPhases.add(images[i + offset]);
+		}
+		mapFire.put(fire, lstPhases);
+		return lstPhases.size();
+	}
+
 	public BufferedImage getWall(Wall wall) {
 		return mapWallTiles.get(wall);
 	}
 
-	private void loadFire() throws IOException {
-		BufferedImage[] images = splitImage(ImageIO.read(new File("gfx/tile-fire.png")), 5, 3, false);
-
+	public List<BufferedImage> getFire(Fire fire) {
+		return mapFire.get(fire);
 	}
 }
