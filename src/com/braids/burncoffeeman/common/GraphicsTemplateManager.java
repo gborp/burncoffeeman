@@ -338,6 +338,17 @@ public class GraphicsTemplateManager {
 		}
 	}
 
+	public void loadBombs(BufferedImage image) throws IOException {
+		BufferedImage[] images = splitImage(image, 8, 4, true);
+
+		// TODO
+		int i = 0;
+		// for (Wall w : Wall.values()) {
+		// mapWallTiles.put(w, images[i]);
+		// i++;
+		// }
+	}
+
 	public void loadFires(BufferedImage image) throws IOException {
 		BufferedImage[] images = splitImage(image, 5, 3, true);
 
