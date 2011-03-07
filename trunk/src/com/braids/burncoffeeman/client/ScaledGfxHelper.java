@@ -108,8 +108,8 @@ public class ScaledGfxHelper {
 
 	}
 
-	public static BufferedImage getPlayer(int size, Color ownColor1, Color ownColor2, String groupName, Activity activityType, Direction direction,
-	        int phaseNumber) {
+	public static BufferedImage getPlayer(int size, Color ownColor1, Color ownColor2, String headGroupName, String bodyGroupName, String legsGroupName,
+	        Activity activityType, Direction direction, int phaseNumber) {
 
 		if (actualSize != size) {
 			actualSize = size;
@@ -119,7 +119,9 @@ public class ScaledGfxHelper {
 		PlayerSlot slot = new PlayerSlot();
 		slot.ownColor1 = ownColor1;
 		slot.ownColor2 = ownColor2;
-		slot.groupName = groupName;
+		slot.headGroupName = headGroupName;
+		slot.bodyGroupName = bodyGroupName;
+		slot.legsGroupName = legsGroupName;
 		slot.activityType = activityType;
 		slot.direction = direction;
 		slot.phaseNumber = phaseNumber;
@@ -129,12 +131,12 @@ public class ScaledGfxHelper {
 		if (result == null) {
 			GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
 
-			AnimTilePhase head = gtm.getAnimPhase(groupName, AnimTilePhaseType.HEAD, activityType, direction, phaseNumber);
-			AnimTilePhase body = gtm.getAnimPhase(groupName, AnimTilePhaseType.BODY, activityType, direction, phaseNumber);
-			AnimTilePhase legs = gtm.getAnimPhase(groupName, AnimTilePhaseType.LEGS, activityType, direction, phaseNumber);
+			AnimTilePhase head = gtm.getAnimPhase(headGroupName, AnimTilePhaseType.HEAD, activityType, direction, phaseNumber);
+			AnimTilePhase body = gtm.getAnimPhase(bodyGroupName, AnimTilePhaseType.BODY, activityType, direction, phaseNumber);
+			AnimTilePhase legs = gtm.getAnimPhase(legsGroupName, AnimTilePhaseType.LEGS, activityType, direction, phaseNumber);
 
 			result = new BufferedImage(size + 1, size + 1, BufferedImage.TYPE_INT_ARGB);
-			GfxHelper.paintBombermanAnimPhase(result.getGraphics(), size / 16f, phaseNumber, Color.RED, Color.YELLOW, head, body, legs);
+			GfxHelper.paintBombermanAnimPhase(result.getGraphics(), size / 16f, phaseNumber, slot.ownColor1, slot.ownColor2, head, body, legs);
 			mapPlayer.put(slot, result);
 		}
 		return result;
@@ -144,19 +146,23 @@ public class ScaledGfxHelper {
 
 		Color     ownColor1;
 		Color     ownColor2;
-		String    groupName;
+		String    headGroupName;
+		String    bodyGroupName;
+		String    legsGroupName;
 		Activity  activityType;
 		Direction direction;
 		int       phaseNumber;
 
 		public boolean equals(Object obj) {
 			PlayerSlot other = (PlayerSlot) obj;
-			return ownColor1.equals(other.ownColor1) && ownColor2.equals(other.ownColor2) && groupName.equals(other.groupName)
-			        && activityType.equals(other.activityType) && direction.equals(other.direction) && phaseNumber == other.phaseNumber;
+			return ownColor1.equals(other.ownColor1) && ownColor2.equals(other.ownColor2) && headGroupName.equals(other.headGroupName)
+			        && bodyGroupName.equals(other.bodyGroupName) && legsGroupName.equals(other.legsGroupName) && activityType.equals(other.activityType)
+			        && direction.equals(other.direction) && phaseNumber == other.phaseNumber;
 		}
 
 		public int hashCode() {
-			return ownColor1.hashCode() ^ ownColor2.hashCode() ^ groupName.hashCode() ^ activityType.hashCode() ^ direction.hashCode() ^ (phaseNumber + 1);
+			return ownColor1.hashCode() ^ ownColor2.hashCode() ^ headGroupName.hashCode() ^ bodyGroupName.hashCode() ^ legsGroupName.hashCode()
+			        ^ activityType.hashCode() ^ direction.hashCode() ^ (phaseNumber + 1);
 		}
 
 	}

@@ -74,7 +74,7 @@ public class MainClient {
 		playerInfo.setColor1(Color.GREEN);
 		playerInfo.setColor2(Color.BLUE);
 		playerInfo.setName("Captian Demo");
-		playerInfo.setGfxHeadGroup("default");
+		playerInfo.setGfxHeadGroup("colored");
 		playerInfo.setGfxBodyGroup("default");
 		playerInfo.setGfxLegsGroup("default");
 
@@ -138,6 +138,10 @@ public class MainClient {
 
 	public void setFireImage(GfxByteModel data) throws IOException {
 		displayer.setFireImage(data);
+	}
+
+	public void setBombImage(GfxByteModel data) throws IOException {
+		displayer.setBombImage(data);
 	}
 
 	public void setPlayerInfoModel(PlayerInfoModel data) {

@@ -171,6 +171,8 @@ public class GameManager {
 			HashSet<String> setBodyGroups = new HashSet<String>();
 			HashSet<String> setLegsGroups = new HashSet<String>();
 			for (Player player : lstPlayers) {
+				bbOut.put(player.getPlayerInfoModel().code());
+
 				setHeadGroups.add(player.getGfxHeadGroup());
 				setBodyGroups.add(player.getGfxBodyGroup());
 				setLegsGroups.add(player.getGfxLegsGroup());
@@ -372,7 +374,7 @@ public class GameManager {
 
 	public void playerDisconnected(Player player) {
 		synchronized (lstPlayers) {
-
+			// TODO
 		}
 	}
 

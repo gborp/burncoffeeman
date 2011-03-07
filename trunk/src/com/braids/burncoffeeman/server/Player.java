@@ -70,6 +70,10 @@ public class Player {
 		processInput.waitUntilReady();
 	}
 
+	public PlayerInfoModel getPlayerInfoModel() {
+		return playerInfo;
+	}
+
 	public void setPlayerInfoModel(PlayerInfoModel playerInfo) {
 		this.playerInfo = playerInfo;
 	}

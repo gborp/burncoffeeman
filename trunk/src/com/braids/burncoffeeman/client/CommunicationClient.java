@@ -208,6 +208,9 @@ public class CommunicationClient {
 				case FIRE:
 					mainClient.setFireImage(data);
 					break;
+				case BOMB:
+					mainClient.setBombImage(data);
+					break;
 			}
 
 			return resultOffsetIncrement;

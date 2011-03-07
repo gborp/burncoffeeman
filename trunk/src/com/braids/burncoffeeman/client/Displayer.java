@@ -104,8 +104,10 @@ public class Displayer extends JPanel {
 			Activity activity = playerModel.getActivity();
 			Activity activityForGfx = getActivityForGfx(activity);
 
-			BufferedImage playerGfx = ScaledGfxHelper.getPlayer((int) (componentSize * 1.5), Color.RED, Color.YELLOW, "default", activityForGfx, playerModel
-			        .getDirection(), phaseCount);
+			PlayerInfoModel playerInfo = players.getPlayerInfoModel(playerModel.getPlayerId());
+
+			BufferedImage playerGfx = ScaledGfxHelper.getPlayer((int) (componentSize * 1.5), playerInfo.getColor1(), playerInfo.getColor2(), playerInfo
+			        .getGfxHeadGroup(), playerInfo.getGfxBodyGroup(), playerInfo.getGfxLegsGroup(), activityForGfx, playerModel.getDirection(), phaseCount);
 			g.drawImage(playerGfx, x, y, null);
 		}
 	}
@@ -150,5 +152,9 @@ public class Displayer extends JPanel {
 
 	public void setFireImage(GfxByteModel data) throws IOException {
 		gtm.loadFires(Helper.loadImageFromByteArray(data.getGfx()));
+	}
+
+	public void setBombImage(GfxByteModel data) throws IOException {
+		gtm.loadBombs(Helper.loadImageFromByteArray(data.getGfx()));
 	}
 }
