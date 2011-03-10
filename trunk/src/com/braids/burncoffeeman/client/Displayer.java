@@ -106,9 +106,11 @@ public class Displayer extends JPanel {
 
 			PlayerInfoModel playerInfo = players.getPlayerInfoModel(playerModel.getPlayerId());
 
-			BufferedImage playerGfx = ScaledGfxHelper.getPlayer((int) (componentSize * 1.5), playerInfo.getColor1(), playerInfo.getColor2(), playerInfo
-			        .getGfxHeadGroup(), playerInfo.getGfxBodyGroup(), playerInfo.getGfxLegsGroup(), activityForGfx, playerModel.getDirection(), phaseCount);
-			g.drawImage(playerGfx, x, y, null);
+			if (playerInfo != null) {
+				BufferedImage playerGfx = ScaledGfxHelper.getPlayer((int) (componentSize * 1.5), playerInfo.getColor1(), playerInfo.getColor2(), playerInfo
+				        .getGfxHeadGroup(), playerInfo.getGfxBodyGroup(), playerInfo.getGfxLegsGroup(), activityForGfx, playerModel.getDirection(), phaseCount);
+				g.drawImage(playerGfx, x, y, null);
+			}
 		}
 	}
 

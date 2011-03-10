@@ -28,6 +28,12 @@ public class GraphicsTemplateManager {
 	private HashMap<Wall, BufferedImage>       mapWallTiles;
 	private HashMap<Fire, List<BufferedImage>> mapFire;
 
+	private List<BufferedImage>                lstBombStandingAnim;
+	private List<BufferedImage>                lstBombMovingAnim;
+	private List<BufferedImage>                lstBombTimerAnim;
+
+	private BufferedImage                      dummyImage;
+
 	private static class AnimOriginalSlot {
 
 		String            groupName;
@@ -64,6 +70,11 @@ public class GraphicsTemplateManager {
 
 		mapWallTiles = new HashMap<Wall, BufferedImage>();
 		mapFire = new HashMap<Fire, List<BufferedImage>>();
+		dummyImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
+		lstBombStandingAnim = new ArrayList<BufferedImage>();
+		lstBombMovingAnim = new ArrayList<BufferedImage>();
+		lstBombTimerAnim = new ArrayList<BufferedImage>();
 	}
 
 	public void loadAnimOriginals(File dir) {
@@ -339,14 +350,13 @@ public class GraphicsTemplateManager {
 	}
 
 	public void loadBombs(BufferedImage image) throws IOException {
-		BufferedImage[] images = splitImage(image, 8, 4, true);
+		BufferedImage[] images = splitImage(image, 8, 3, true);
 
-		// TODO
-		int i = 0;
-		// for (Wall w : Wall.values()) {
-		// mapWallTiles.put(w, images[i]);
-		// i++;
-		// }
+		for (int i = 0; i < 8; i++) {
+			lstBombStandingAnim.add(images[i]);
+			lstBombMovingAnim.add(images[i + 8]);
+		}
+		lstBombTimerAnim.add(images[16]);
 	}
 
 	public void loadFires(BufferedImage image) throws IOException {
@@ -368,10 +378,41 @@ public class GraphicsTemplateManager {
 	}
 
 	public BufferedImage getWall(Wall wall) {
-		return mapWallTiles.get(wall);
+		BufferedImage result = mapWallTiles.get(wall);
+
+		if (result == null) {
+			result = dummyImage;
+		}
+
+		return result;
 	}
 
 	public List<BufferedImage> getFire(Fire fire) {
-		return mapFire.get(fire);
+		List<BufferedImage> result = mapFire.get(fire);
+
+		if (result == null) {
+			result = new ArrayList<BufferedImage>(20);
+			for (int i = 0; i < 20; i++) {
+				result.add(dummyImage);
+			}
+		}
+
+		return result;
+	}
+
+	public List<BufferedImage> getBomb(BombType type) {
+		switch (type) {
+			case JELLY:
+			case NORMAL:
+			case REMOVE:
+			case RUSTY:
+				return lstBombStandingAnim;
+			case TIMER:
+				return lstBombTimerAnim;
+			default:
+				throw new RuntimeException("Invalid state");
+		}
+		// TODO
+		// return lstBombMovingAnim;
 	}
 }
