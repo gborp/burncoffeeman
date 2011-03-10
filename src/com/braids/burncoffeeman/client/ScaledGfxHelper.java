@@ -14,6 +14,7 @@ import java.util.List;
 import com.braids.burncoffeeman.common.Activity;
 import com.braids.burncoffeeman.common.AnimTilePhase;
 import com.braids.burncoffeeman.common.AnimTilePhaseType;
+import com.braids.burncoffeeman.common.BombType;
 import com.braids.burncoffeeman.common.Direction;
 import com.braids.burncoffeeman.common.Fire;
 import com.braids.burncoffeeman.common.GfxHelper;
@@ -180,6 +181,22 @@ public class ScaledGfxHelper {
 
 		public int hashCode() {
 			return ownColor1.hashCode() ^ ownColor2.hashCode() ^ fire.hashCode();
+		}
+	}
+
+	private static class BombSlot {
+
+		Color    ownColor1;
+		Color    ownColor2;
+		BombType type;
+
+		public boolean equals(Object obj) {
+			BombSlot other = (BombSlot) obj;
+			return ownColor1.equals(other.ownColor1) && ownColor2.equals(other.ownColor2) && type.equals(other.type);
+		}
+
+		public int hashCode() {
+			return ownColor1.hashCode() ^ ownColor2.hashCode() ^ type.hashCode();
 		}
 	}
 }
