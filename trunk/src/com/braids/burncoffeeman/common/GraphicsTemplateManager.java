@@ -391,6 +391,7 @@ public class GraphicsTemplateManager {
 		List<BufferedImage> result = mapFire.get(fire);
 
 		if (result == null) {
+			// prevent initial npe errors
 			result = new ArrayList<BufferedImage>(20);
 			for (int i = 0; i < 20; i++) {
 				result.add(dummyImage);
@@ -400,19 +401,15 @@ public class GraphicsTemplateManager {
 		return result;
 	}
 
-	public List<BufferedImage> getBomb(BombType type) {
-		switch (type) {
-			case JELLY:
-			case NORMAL:
-			case REMOVE:
-			case RUSTY:
-				return lstBombStandingAnim;
-			case TIMER:
-				return lstBombTimerAnim;
-			default:
-				throw new RuntimeException("Invalid state");
+	public List<BufferedImage> getBomb(BombPhases bombPhase, BombType type) {
+		if (bombPhase == BombPhases.ROLLING || bombPhase == BombPhases.FLYING) {
+			return lstBombMovingAnim;
 		}
-		// TODO
-		// return lstBombMovingAnim;
+
+		if (type == BombType.TIMER) {
+			return lstBombTimerAnim;
+		}
+
+		return lstBombStandingAnim;
 	}
 }

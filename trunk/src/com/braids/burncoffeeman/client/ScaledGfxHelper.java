@@ -14,6 +14,7 @@ import java.util.List;
 import com.braids.burncoffeeman.common.Activity;
 import com.braids.burncoffeeman.common.AnimTilePhase;
 import com.braids.burncoffeeman.common.AnimTilePhaseType;
+import com.braids.burncoffeeman.common.BombPhases;
 import com.braids.burncoffeeman.common.BombType;
 import com.braids.burncoffeeman.common.Direction;
 import com.braids.burncoffeeman.common.Fire;
@@ -23,20 +24,25 @@ import com.braids.burncoffeeman.common.Wall;
 
 public class ScaledGfxHelper {
 
-	private static int                                actualSize    = -1;
-	private static HashMap<PlayerSlot, BufferedImage> mapPlayer     = new HashMap<PlayerSlot, BufferedImage>();
-	private static HashMap<Wall, Image>               mapWall       = new HashMap<Wall, Image>();
-	private static HashMap<FireSlot, List<Image>>     mapFire       = new HashMap<FireSlot, List<Image>>();
+	private static int                                actualSize       = -1;
+	private static HashMap<PlayerSlot, BufferedImage> mapPlayer        = new HashMap<PlayerSlot, BufferedImage>();
+	private static HashMap<Wall, Image>               mapWall          = new HashMap<Wall, Image>();
+	private static HashMap<FireSlot, List<Image>>     mapFire          = new HashMap<FireSlot, List<Image>>();
+	private static HashMap<BombSlot, List<Image>>     mapBomb          = new HashMap<BombSlot, List<Image>>();
 
-	private static ColorFilter                        colorFilter   = new ColorFilter();
+	private static ColorFilter                        colorFilter      = new ColorFilter();
 
-	private static final Color                        fireKeyColor1 = new Color(255, 0, 255);
-	private static final Color                        fireKeyColor2 = new Color(0, 0, 0);
+	private static final Color                        FIRE_KEY_COLOR_1 = new Color(255, 0, 255);
+	private static final Color                        FIRE_KEY_COLOR_2 = new Color(0, 0, 0);
+
+	private static final Color                        BOMB_KEY_COLOR_1 = new Color(255, 0, 255);
+	private static final Color                        BOMB_KEY_COLOR_2 = new Color(255, 128, 255);
 
 	private static void clearCache() {
 		mapPlayer.clear();
 		mapWall.clear();
 		mapFire.clear();
+		mapBomb.clear();
 	}
 
 	public static Image getWall(int size, Wall wall) {
@@ -73,10 +79,10 @@ public class ScaledGfxHelper {
 		if (result == null) {
 			GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
 
-			colorFilter.fromColor1 = fireKeyColor1.getRGB();
+			colorFilter.fromColor1 = FIRE_KEY_COLOR_1.getRGB();
 			colorFilter.toColor1 = ownColor1.getRGB();
 
-			colorFilter.fromColor2 = fireKeyColor2.getRGB();
+			colorFilter.fromColor2 = FIRE_KEY_COLOR_2.getRGB();
 			colorFilter.toColor2 = ownColor2.getRGB();
 
 			result = new ArrayList<Image>();
@@ -89,6 +95,41 @@ public class ScaledGfxHelper {
 		}
 
 		return result.get(phase);
+	}
+
+	public static Image getBomb(int size, BombPhases bombPhase, BombType type, Color ownColor1, Color ownColor2, int phase) {
+		if (actualSize != size) {
+			actualSize = size;
+			clearCache();
+		}
+
+		BombSlot slot = new BombSlot();
+		slot.type = type;
+		slot.bombPhase = bombPhase;
+		slot.ownColor1 = ownColor1;
+		slot.ownColor2 = ownColor2;
+
+		List<Image> result = mapBomb.get(slot);
+
+		if (result == null) {
+			GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
+
+			colorFilter.fromColor1 = BOMB_KEY_COLOR_1.getRGB();
+			colorFilter.toColor1 = ownColor1.getRGB();
+
+			colorFilter.fromColor2 = BOMB_KEY_COLOR_2.getRGB();
+			colorFilter.toColor2 = ownColor2.getRGB();
+
+			result = new ArrayList<Image>();
+			for (BufferedImage origFire : gtm.getBomb(bombPhase, type)) {
+				ImageProducer ip = new FilteredImageSource(origFire.getSource(), colorFilter);
+				Image coloredImage = Toolkit.getDefaultToolkit().createImage(ip);
+				result.add(coloredImage.getScaledInstance(size + 1, size + 1, Image.SCALE_REPLICATE));
+			}
+			mapBomb.put(slot, result);
+		}
+
+		return result.get(phase % result.size());
 	}
 
 	private static class ColorFilter extends RGBImageFilter {
@@ -186,17 +227,18 @@ public class ScaledGfxHelper {
 
 	private static class BombSlot {
 
-		Color    ownColor1;
-		Color    ownColor2;
-		BombType type;
+		Color      ownColor1;
+		Color      ownColor2;
+		BombType   type;
+		BombPhases bombPhase;
 
 		public boolean equals(Object obj) {
 			BombSlot other = (BombSlot) obj;
-			return ownColor1.equals(other.ownColor1) && ownColor2.equals(other.ownColor2) && type.equals(other.type);
+			return ownColor1.equals(other.ownColor1) && ownColor2.equals(other.ownColor2) && type.equals(other.type) && bombPhase.equals(other.bombPhase);
 		}
 
 		public int hashCode() {
-			return ownColor1.hashCode() ^ ownColor2.hashCode() ^ type.hashCode();
+			return ownColor1.hashCode() ^ ownColor2.hashCode() ^ type.hashCode() ^ bombPhase.hashCode();
 		}
 	}
 }
