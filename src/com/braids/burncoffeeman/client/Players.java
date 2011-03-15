@@ -29,7 +29,7 @@ public class Players {
 		mapPlayerInfoModel.put(data.getPlayerId(), data);
 	}
 
-	public synchronized PlayerInfoModel getPlayerInfoModel(Integer id) {
+	public synchronized PlayerInfoModel getPlayerInfoModel(int id) {
 		return mapPlayerInfoModel.get(id);
 	}
 }

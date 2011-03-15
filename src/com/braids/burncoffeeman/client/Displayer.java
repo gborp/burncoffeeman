@@ -2,6 +2,7 @@ package com.braids.burncoffeeman.client;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -90,8 +91,10 @@ public class Displayer extends JPanel {
 			int x = (int) ((b.getX() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 			int y = (int) ((b.getY() - Constants.COMPONENT_SIZE_IN_VIRTUAL / 2) / divider);
 
-			g.setColor(Color.BLACK);
-			g.fillOval(x, y, componentSize, componentSize);
+			PlayerInfoModel playerModel = players.getPlayerInfoModel(b.getBombOwnerId());
+			Image bombGfx = ScaledGfxHelper.getBomb(componentSize, b.getBombPhase(), b.getType(), playerModel.getColor1(), playerModel.getColor2(),
+			        animationCounter * 8 / Constants.MAIN_CYCLE_PER_SEC & 255);
+			g.drawImage(bombGfx, x, y, null);
 		}
 
 		List<PlayerModel> lstPlayers = players.getPlayerModels();

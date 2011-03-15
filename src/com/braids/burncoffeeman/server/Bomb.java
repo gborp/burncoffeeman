@@ -18,7 +18,6 @@ public class Bomb {
 	private boolean            firstCycle;
 	private boolean            stateChanged;
 	private Direction          direction;
-	private BombPhases         phase;
 	private int                flyingTargetX;
 	private int                flyingTargetY;
 	/** -1: don't tick */
@@ -102,7 +101,7 @@ public class Bomb {
 
 		LevelModel levelModel = GameManager.getInstance().getLevelModel();
 
-		if (phase == BombPhases.FLYING) {
+		if (getPhase() == BombPhases.FLYING) {
 			stateChanged = true;
 			int newPosX = getX() + getDirection().getXMultiplier() * Constants.BOMB_FLYING_SPEED;
 			int newPosY = getY() + getDirection().getYMultiplier() * Constants.BOMB_FLYING_SPEED;
@@ -165,7 +164,7 @@ public class Bomb {
 				gm.validateAndSetFlyingTargetPosX(this, getFlyingTargetX() + getDirectionXMultiplier() * Constants.LEVEL_COMPONENT_GRANULARITY);
 				gm.validateAndSetFlyingTargetPosY(this, getFlyingTargetY() + getDirectionYMultiplier() * Constants.LEVEL_COMPONENT_GRANULARITY);
 			}
-		} else if (phase == BombPhases.ROLLING) {
+		} else if (getPhase() == BombPhases.ROLLING) {
 			stateChanged = true;
 			if (gm.canBombRollToComponentPosition(this, getComponentPosX() + getDirectionXMultiplier(), getComponentPosY() + getDirectionYMultiplier())) {
 				// if (MathHelper.checkRandomEvent(model.getCrazyPercent() /
@@ -214,7 +213,7 @@ public class Bomb {
 			stateChanged = true;
 		}
 
-		if (phase == BombPhases.ROLLING || phase == BombPhases.STANDING) {
+		if (getPhase() == BombPhases.ROLLING || getPhase() == BombPhases.STANDING) {
 			if (tickingCountdown == 0) {
 				setPhase(BombPhases.ABOUT_TO_DETONATE);
 				tickingCountdown--;
@@ -237,9 +236,9 @@ public class Bomb {
 	}
 
 	public void setPhase(BombPhases phase) {
-		if (this.phase != phase) {
+		if (getPhase() != phase) {
 			stateChanged = true;
-			this.phase = phase;
+			model.setBombPhase(phase);
 			if (phase == BombPhases.FLYING) {
 				// tickingCountdown = -1;
 			} else if (phase == BombPhases.DETONATED) {
@@ -253,7 +252,7 @@ public class Bomb {
 	}
 
 	public BombPhases getPhase() {
-		return this.phase;
+		return model.getBombPhase();
 	}
 
 	public int getFlyingTargetX() {
@@ -289,11 +288,11 @@ public class Bomb {
 	}
 
 	public boolean isAboutToDetonate() {
-		return phase == BombPhases.ABOUT_TO_DETONATE;
+		return getPhase() == BombPhases.ABOUT_TO_DETONATE;
 	}
 
 	public boolean isDetonated() {
-		return phase == BombPhases.DETONATED;
+		return getPhase() == BombPhases.DETONATED;
 	}
 
 	public void setTriggererPlayer(int triggerPlayer) {

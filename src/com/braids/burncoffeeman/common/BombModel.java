@@ -9,11 +9,12 @@ public class BombModel implements CoderDecoder {
 	int          y;
 	byte         z;
 	BombType     type;
+	BombPhases   bombPhase;
 	byte         bombOwnerId;
 	private byte range;
 
 	public byte[] code() {
-		ByteBuffer bb = ByteBuffer.allocate(1 + 10);
+		ByteBuffer bb = ByteBuffer.allocate(1 + 11);
 
 		bb.put((byte) PacketMessageType.BOMB.ordinal());
 
@@ -22,6 +23,7 @@ public class BombModel implements CoderDecoder {
 		Helper.putShortIntToBuffer(bb, y);
 		bb.put(z);
 		bb.put((byte) type.ordinal());
+		bb.put((byte) bombPhase.ordinal());
 		bb.put(bombOwnerId);
 		bb.put(range);
 		return bb.array();
@@ -33,10 +35,11 @@ public class BombModel implements CoderDecoder {
 		y = Helper.bytesToInt(bytes[offset + 4], bytes[offset + 5]);
 		z = bytes[offset + 6];
 		type = BombType.values()[bytes[offset + 7]];
-		bombOwnerId = bytes[offset + 8];
-		range = bytes[offset + 9];
+		bombPhase = BombPhases.values()[bytes[offset + 8]];
+		bombOwnerId = bytes[offset + 9];
+		range = bytes[offset + 10];
 
-		return 10;
+		return 11;
 	}
 
 	public int getX() {
@@ -71,7 +74,7 @@ public class BombModel implements CoderDecoder {
 		this.type = type;
 	}
 
-	public byte getBombOwnerId() {
+	public int getBombOwnerId() {
 		return this.bombOwnerId;
 	}
 
@@ -93,5 +96,13 @@ public class BombModel implements CoderDecoder {
 
 	public int getRange() {
 		return Helper.byteToInt(range);
+	}
+
+	public BombPhases getBombPhase() {
+		return this.bombPhase;
+	}
+
+	public void setBombPhase(BombPhases bombPhase) {
+		this.bombPhase = bombPhase;
 	}
 }
