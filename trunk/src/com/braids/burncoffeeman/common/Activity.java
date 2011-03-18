@@ -18,9 +18,9 @@ public enum Activity {
 	/** Punching activity. */
 	PUNCHING(4, false, true),
 	/** Picking up activity. */
-	PICKING_UP(4, false, true),
+	PICKING_UP(4, false, false),
 	/** Dying activity. */
-	DYING(4, false, true);
+	DYING(4, false, false);
 
 	/**
 	 * The number of game iterations of the activity for a one-time play. After
