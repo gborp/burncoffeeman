@@ -89,11 +89,9 @@ public class CommunicationClient {
 
 	private class ProcessInput implements Runnable {
 
-		private final Socket        socket;
 		private BufferedInputStream bis;
 
 		public ProcessInput(Socket socket) throws IOException {
-			this.socket = socket;
 			bis = new BufferedInputStream(socket.getInputStream(), Constants.MAX_PACKET_SIZE);
 			started.countDown();
 		}

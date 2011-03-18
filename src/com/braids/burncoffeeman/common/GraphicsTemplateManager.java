@@ -200,6 +200,7 @@ public class GraphicsTemplateManager {
 			        BufferedImage.TYPE_INT_ARGB);
 			int y = 0;
 			for (Activity activityType : Activity.values()) {
+
 				if (activityType.hasOwnGfx()) {
 					for (Direction direction : Direction.values()) {
 						for (int phase = 1; phase <= activityType.getIterations(); phase++) {
