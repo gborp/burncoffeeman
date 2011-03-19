@@ -2,8 +2,15 @@ package com.braids.burncoffeeman.common;
 
 import java.util.EnumSet;
 
+import com.braids.burncoffeeman.common.transfer.CodecBuilder;
+import com.braids.burncoffeeman.common.transfer.DecodecBuilder;
+import com.braids.burncoffeeman.common.transfer.SuppressDecode;
+import com.braids.burncoffeeman.common.transfer.Transfer;
+import com.braids.burncoffeeman.common.transfer.TransferType;
+
 public class PlayerModel implements CoderDecoder {
 
+	@SuppressDecode
 	@Transfer(TransferType.AUTO)
 	PacketMessageType        packetMessageType = PacketMessageType.PLAYER_MODEL;
 	@Transfer(TransferType.BYTE)
@@ -38,44 +45,12 @@ public class PlayerModel implements CoderDecoder {
 	}
 
 	public byte[] code() {
-		CodecBuilder cb = new CodecBuilder();
-		cb.putEnum(PacketMessageType.PLAYER_MODEL);
-		cb.putByte(playerId);
-		cb.putShort(x);
-		cb.putShort(y);
-		cb.putEnum(direction);
-		cb.putEnum(activity);
-		cb.putByte(speed);
-		cb.putByte(vitality);
-		cb.putByte(((isHurted ? 1 : 0) + (isHurt ? 2 : 0) + (isMagic ? 4 : 0)));
-		cb.putEnumSet(disease, Disease.class);
-		cb.putShort(animationPhase);
-
-		// FIXME
-		byte[] autoResult = CodecBuilder.auto(this);
-
-		return cb.getResult();
+		return CodecBuilder.auto(this);
 	}
 
 	public int decode(byte[] bytes, int offset) {
 
-		DecodecBuilder db = new DecodecBuilder(bytes, offset);
-
-		playerId = db.getByte();
-		x = db.getShort();
-		y = db.getShort();
-		direction = db.getEnum(Direction.class);
-		activity = db.getEnum(Activity.class);
-		speed = db.getByte();
-		vitality = db.getByte();
-		int effects = db.getByte();
-		isHurted = (effects & 1) != 0;
-		isHurt = (effects & 2) != 0;
-		isMagic = (effects & 4) != 0;
-		disease = db.getEnumSet(Disease.class);
-		animationPhase = db.getShort();
-
-		return db.getOffsetIncrement();
+		return DecodecBuilder.auto(this, bytes, offset);
 	}
 
 	public int getPlayerId() {
