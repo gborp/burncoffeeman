@@ -1,4 +1,4 @@
-package com.braids.burncoffeeman.common;
+package com.braids.burncoffeeman.common.transfer;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
