@@ -1,5 +1,6 @@
 package com.braids.burncoffeeman.common.transfer;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -36,6 +37,10 @@ public class CoderDecoderHelper {
 							transferType = TransferType.ENUM;
 						} else if (type.equals(EnumSet.class)) {
 							transferType = TransferType.ENUMSET;
+						} else if (type.equals(Color.class)) {
+							transferType = TransferType.COLOR;
+						} else if (type.equals(String.class)) {
+							transferType = TransferType.STRING;
 						}
 					}
 					result.put(f, transferType);

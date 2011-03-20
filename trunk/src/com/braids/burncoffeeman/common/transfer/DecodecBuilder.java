@@ -1,10 +1,12 @@
 package com.braids.burncoffeeman.common.transfer;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.EnumSet;
 import java.util.Map;
 
+import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.Helper;
 
 public class DecodecBuilder {
@@ -68,6 +70,14 @@ public class DecodecBuilder {
 					case SHORT:
 						f.setShort(instance, (short) db.getShort());
 						break;
+					case COLOR:
+						f.set(instance, new Color(db.getByte(), db.getByte(), db.getByte()));
+						break;
+					case STRING:
+						int valueAsBytesSize = db.getByte();
+						String value = new String(db.getBytes(valueAsBytesSize), Constants.UTF_8);
+						f.set(instance, value);
+						break;
 					default:
 						throw new RuntimeException("Unimplemented class: " + f.getType().getName());
 				}
@@ -84,6 +94,13 @@ public class DecodecBuilder {
 	public int getByte() {
 		int result = bytes[offset] & 0xff;
 		offset += 1;
+		return result;
+	}
+
+	public byte[] getBytes(int count) {
+		byte[] result = new byte[count];
+		System.arraycopy(bytes, offset, result, 0, count);
+		offset += count;
 		return result;
 	}
 

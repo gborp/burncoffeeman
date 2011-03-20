@@ -1,35 +1,35 @@
 package com.braids.burncoffeeman.common;
 
+import com.braids.burncoffeeman.common.transfer.CodecBuilder;
+import com.braids.burncoffeeman.common.transfer.DecodecBuilder;
+import com.braids.burncoffeeman.common.transfer.SuppressDecode;
+import com.braids.burncoffeeman.common.transfer.Transfer;
+import com.braids.burncoffeeman.common.transfer.TransferType;
+
 public class ClientInputModel implements CoderDecoder {
 
-	boolean upPress;
-	boolean downPress;
-	boolean leftPress;
-	boolean rightPress;
-	boolean action1Press;
-	boolean action2Press;
+	@SuppressDecode
+	@Transfer(TransferType.AUTO)
+	PacketMessageType packetMessageType = PacketMessageType.CLIENT_INPUT;
+	@Transfer(TransferType.AUTO)
+	boolean           upPress;
+	@Transfer(TransferType.AUTO)
+	boolean           downPress;
+	@Transfer(TransferType.AUTO)
+	boolean           leftPress;
+	@Transfer(TransferType.AUTO)
+	boolean           rightPress;
+	@Transfer(TransferType.AUTO)
+	boolean           action1Press;
+	@Transfer(TransferType.AUTO)
+	boolean           action2Press;
 
 	public byte[] code() {
-		byte[] bytes = new byte[2];
-
-		byte b1 = (byte) ((upPress ? 1 : 0) + (downPress ? 2 : 0) + (leftPress ? 4 : 0) + (rightPress ? 8 : 0) + (action1Press ? 16 : 0) + (action2Press ? 32
-		        : 0));
-
-		bytes[0] = (byte) PacketMessageType.CLIENT_INPUT.ordinal();
-		bytes[1] = b1;
-		return bytes;
+		return CodecBuilder.auto(this);
 	}
 
 	public int decode(byte[] bytes, int offset) {
-		byte b1 = bytes[offset];
-		upPress = (b1 & 1) != 0;
-		downPress = (b1 & 2) != 0;
-		leftPress = (b1 & 4) != 0;
-		rightPress = (b1 & 8) != 0;
-		action1Press = (b1 & 16) != 0;
-		action2Press = (b1 & 32) != 0;
-
-		return 1;
+		return DecodecBuilder.auto(this, bytes, offset);
 	}
 
 	public boolean isUpPress() {
