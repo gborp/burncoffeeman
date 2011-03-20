@@ -1,10 +1,13 @@
 package com.braids.burncoffeeman.common.transfer;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
 import java.util.Map;
+
+import com.braids.burncoffeeman.common.Constants;
 
 public class CodecBuilder {
 
@@ -60,6 +63,17 @@ public class CodecBuilder {
 					case SHORT:
 						cb.putShort(f.getInt(instance));
 						break;
+					case COLOR:
+						Color color = (Color) f.get(instance);
+						cb.putByte(color.getRed());
+						cb.putByte(color.getGreen());
+						cb.putByte(color.getBlue());
+						break;
+					case STRING:
+						byte[] nameAsBytes = ((String) f.get(instance)).getBytes(Constants.UTF_8);
+						cb.putByte((byte) nameAsBytes.length);
+						cb.putBytes(nameAsBytes);
+						break;
 					default:
 						throw new RuntimeException("Unimplemented class: " + f.getType().getName());
 				}
@@ -83,6 +97,10 @@ public class CodecBuilder {
 
 	public void putByte(int value) {
 		bb.put((byte) value);
+	}
+
+	public void putBytes(byte[] value) {
+		bb.put(value);
 	}
 
 	public void putShort(int value) {

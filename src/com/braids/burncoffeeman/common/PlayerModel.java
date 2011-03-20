@@ -49,7 +49,6 @@ public class PlayerModel implements CoderDecoder {
 	}
 
 	public int decode(byte[] bytes, int offset) {
-
 		return DecodecBuilder.auto(this, bytes, offset);
 	}
 
