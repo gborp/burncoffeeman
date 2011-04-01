@@ -18,12 +18,12 @@ public class GfxHelper {
 		Color[][] arGfxWhole = new Color[16][16];
 
 		GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
-		currentHead = gtm
-		        .getAnimPhase(currentHead.getGroupName(), currentHead.getType(), currentHead.getActivityType(), currentHead.getDirection(), phaseCount);
-		currentBody = gtm
-		        .getAnimPhase(currentBody.getGroupName(), currentBody.getType(), currentBody.getActivityType(), currentBody.getDirection(), phaseCount);
-		currentLegs = gtm
-		        .getAnimPhase(currentLegs.getGroupName(), currentLegs.getType(), currentLegs.getActivityType(), currentLegs.getDirection(), phaseCount);
+		currentHead = gtm.getAnimPhaseWithoutDisabled(currentHead.getGroupName(), currentHead.getType(), currentHead.getActivityType(), currentHead
+		        .getDirection(), phaseCount);
+		currentBody = gtm.getAnimPhaseWithoutDisabled(currentBody.getGroupName(), currentBody.getType(), currentBody.getActivityType(), currentBody
+		        .getDirection(), phaseCount);
+		currentLegs = gtm.getAnimPhaseWithoutDisabled(currentLegs.getGroupName(), currentLegs.getType(), currentLegs.getActivityType(), currentLegs
+		        .getDirection(), phaseCount);
 
 		int yOffset = 0;
 		for (int y = 0; y < currentHead.getHeight(); y++) {

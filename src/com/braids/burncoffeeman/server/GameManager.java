@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.braids.burncoffeeman.common.Activity;
-import com.braids.burncoffeeman.common.AnimTilePhaseType;
+import com.braids.burncoffeeman.common.BodyPart;
 import com.braids.burncoffeeman.common.BombPhases;
 import com.braids.burncoffeeman.common.Constants;
 import com.braids.burncoffeeman.common.Direction;
@@ -179,13 +179,13 @@ public class GameManager {
 			}
 
 			for (String groupName : setHeadGroups) {
-				sendAnimGfx(groupName, AnimTilePhaseType.HEAD);
+				sendAnimGfx(groupName, BodyPart.HEAD);
 			}
 			for (String groupName : setBodyGroups) {
-				sendAnimGfx(groupName, AnimTilePhaseType.BODY);
+				sendAnimGfx(groupName, BodyPart.BODY);
 			}
 			for (String groupName : setLegsGroups) {
-				sendAnimGfx(groupName, AnimTilePhaseType.LEGS);
+				sendAnimGfx(groupName, BodyPart.LEGS);
 			}
 
 			sendOtherGfx(GfxByteModelType.BOMB, "gfx/tile-bomb.png");
@@ -207,7 +207,7 @@ public class GameManager {
 		bbOut.put(atm.code());
 	}
 
-	private void sendAnimGfx(String groupName, AnimTilePhaseType phaseType) {
+	private void sendAnimGfx(String groupName, BodyPart phaseType) {
 		GfxByteModel atm = new GfxByteModel();
 		atm.setType(GfxByteModelType.ANIM_TILE);
 		atm.setGroupName(groupName);

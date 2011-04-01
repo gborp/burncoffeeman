@@ -12,7 +12,7 @@ public class GfxByteModel implements CoderDecoder {
 
 	GfxByteModelType          type;
 	String                    groupName;
-	AnimTilePhaseType         phaseType;
+	BodyPart         phaseType;
 	byte[]                    gfx;
 
 	public byte[] code() {
@@ -60,7 +60,7 @@ public class GfxByteModel implements CoderDecoder {
 		offset += 1 + nameAsBytesSize;
 
 		if (bytes[offset] != UNKNOWN_PHASE_TYPE) {
-			phaseType = AnimTilePhaseType.values()[bytes[offset]];
+			phaseType = BodyPart.values()[bytes[offset]];
 		}
 		offset += 1;
 
@@ -79,11 +79,11 @@ public class GfxByteModel implements CoderDecoder {
 		this.groupName = groupName;
 	}
 
-	public AnimTilePhaseType getPhaseType() {
+	public BodyPart getPhaseType() {
 		return this.phaseType;
 	}
 
-	public void setPhaseType(AnimTilePhaseType phaseType) {
+	public void setPhaseType(BodyPart phaseType) {
 		this.phaseType = phaseType;
 	}
 

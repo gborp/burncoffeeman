@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import com.braids.burncoffeeman.common.Activity;
 import com.braids.burncoffeeman.common.AnimTilePhase;
 import com.braids.burncoffeeman.common.Constants;
 
@@ -297,6 +298,12 @@ public class Editor extends JPanel {
 
 	private void paintTile(Graphics g, AnimTilePhase tile, int yOffset) {
 
+		boolean enabledForEdit = tile.getActivityType().hasOwnGfx(tile.getType());
+		if (!enabledForEdit) {
+			tile = EditorManager.getInstance().getAnimTilePhase(tile.getGroupName(), tile.getType(), Activity.STANDING, tile.getDirection(),
+			        tile.getPhaseNumber());
+		}
+
 		for (int y = 0; y < tile.getHeight(); y++) {
 			for (int x = 0; x < tile.getWidth(); x++) {
 
@@ -324,6 +331,10 @@ public class Editor extends JPanel {
 			}
 		}
 
+		if (!enabledForEdit) {
+			g.setColor(new Color(255, 128, 128, 128));
+			g.fillRect(0, yOffset, (int) (tile.getWidth() * zoomRatio), (int) (tile.getHeight() * zoomRatio));
+		}
 	}
 
 	public float getZoomRatio() {

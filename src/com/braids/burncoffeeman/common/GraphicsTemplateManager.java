@@ -36,8 +36,8 @@ public class GraphicsTemplateManager {
 
 	private static class AnimOriginalSlot {
 
-		String            groupName;
-		AnimTilePhaseType phaseType;
+		String   groupName;
+		BodyPart phaseType;
 
 		public boolean equals(Object obj) {
 			AnimOriginalSlot other = (AnimOriginalSlot) obj;
@@ -85,7 +85,7 @@ public class GraphicsTemplateManager {
 					name = name.substring(0, name.length() - ".png".length());
 					String[] nameSegments = name.split("\\_");
 					String groupName = nameSegments[0];
-					AnimTilePhaseType phaseType = AnimTilePhaseType.valueOf(nameSegments[1]);
+					BodyPart phaseType = BodyPart.valueOf(nameSegments[1]);
 
 					AnimOriginalSlot slot = new AnimOriginalSlot();
 					slot.groupName = groupName;
@@ -100,7 +100,7 @@ public class GraphicsTemplateManager {
 		}
 	}
 
-	public byte[] getOriginalImage(String groupName, AnimTilePhaseType phaseType) {
+	public byte[] getOriginalImage(String groupName, BodyPart phaseType) {
 		AnimOriginalSlot slot = new AnimOriginalSlot();
 		slot.groupName = groupName;
 		slot.phaseType = phaseType;
@@ -124,7 +124,7 @@ public class GraphicsTemplateManager {
 					name = name.substring(0, name.length() - ".png".length());
 					String[] nameSegments = name.split("\\_");
 					String groupName = nameSegments[0];
-					AnimTilePhaseType phaseType = AnimTilePhaseType.valueOf(nameSegments[1]);
+					BodyPart phaseType = BodyPart.valueOf(nameSegments[1]);
 
 					loadAnim(image, groupName, phaseType);
 				} catch (IOException ex) {
@@ -142,9 +142,9 @@ public class GraphicsTemplateManager {
 		Collections.sort(lstGroupsLegs);
 	}
 
-	public void loadAnim(BufferedImage image, String groupName, AnimTilePhaseType phaseType) {
+	public void loadAnim(BufferedImage image, String groupName, BodyPart bodyPart) {
 
-		switch (phaseType) {
+		switch (bodyPart) {
 			case HEAD:
 				if (!lstGroupsHead.contains(groupName)) {
 					lstGroupsHead.add(groupName);
@@ -162,13 +162,13 @@ public class GraphicsTemplateManager {
 				break;
 		}
 
-		int phaseHeight = phaseType.getHeight();
+		int phaseHeight = bodyPart.getHeight();
 		int y = 0;
 		for (Activity activityType : Activity.values()) {
-			if (activityType.hasOwnGfx) {
+			if (activityType.hasOwnGfx(bodyPart)) {
 				for (Direction direction : Direction.values()) {
 					for (int phase = 1; phase <= activityType.getIterations(); phase++) {
-						AnimTilePhase tile = getAnimPhase(groupName, phaseType, activityType, direction, phase);
+						AnimTilePhase tile = getAnimPhase(groupName, bodyPart, activityType, direction, phase);
 						tile.loadFromBitmap(image, (phase - 1) * 16, y);
 					}
 					y += phaseHeight;
@@ -187,21 +187,21 @@ public class GraphicsTemplateManager {
 		Collections.sort(lstAnimTilePhaseBody, new AnimTilePhaseComparator());
 		Collections.sort(lstAnimTilePhaseLegs, new AnimTilePhaseComparator());
 
-		saveType(lstGroupsHead, AnimTilePhaseType.HEAD, dir);
-		saveType(lstGroupsBody, AnimTilePhaseType.BODY, dir);
-		saveType(lstGroupsLegs, AnimTilePhaseType.LEGS, dir);
+		saveType(lstGroupsHead, BodyPart.HEAD, dir);
+		saveType(lstGroupsBody, BodyPart.BODY, dir);
+		saveType(lstGroupsLegs, BodyPart.LEGS, dir);
 	}
 
-	private void saveType(List<String> lstGroup, AnimTilePhaseType phaseType, File dir) {
+	private void saveType(List<String> lstGroup, BodyPart phaseType, File dir) {
 		int phaseHeight = phaseType.getHeight();
 		for (String groupName : lstGroup) {
 
-			BufferedImage bi = new BufferedImage(16 * Constants.MAX_ANIM_PHASE_COUNT, phaseHeight * Direction.values().length * Activity.getNumberOfOwnGfx(),
-			        BufferedImage.TYPE_INT_ARGB);
+			BufferedImage bi = new BufferedImage(16 * Constants.MAX_ANIM_PHASE_COUNT, phaseHeight * Direction.values().length
+			        * Activity.getNumberOfOwnGfx(phaseType), BufferedImage.TYPE_INT_ARGB);
 			int y = 0;
 			for (Activity activityType : Activity.values()) {
 
-				if (activityType.hasOwnGfx()) {
+				if (activityType.hasOwnGfx(phaseType)) {
 					for (Direction direction : Direction.values()) {
 						for (int phase = 1; phase <= activityType.getIterations(); phase++) {
 							AnimTilePhase tile = getAnimPhase(groupName, phaseType, activityType, direction, phase);
@@ -240,7 +240,7 @@ public class GraphicsTemplateManager {
 		saveAnims();
 	}
 
-	public AnimTilePhase getAnimTilePhase(String groupName, AnimTilePhaseType type, Activity activityType, Direction direction, int phaseNumber) {
+	public AnimTilePhase getAnimTilePhase(String groupName, BodyPart type, Activity activityType, Direction direction, int phaseNumber) {
 		List<AnimTilePhase> lstAnimTilePhase = null;
 		switch (type) {
 			case HEAD:
@@ -263,7 +263,16 @@ public class GraphicsTemplateManager {
 		return null;
 	}
 
-	public AnimTilePhase getAnimPhase(String groupName, AnimTilePhaseType type, Activity activityType, Direction direction, int phaseNumber) {
+	public AnimTilePhase getAnimPhaseWithoutDisabled(String groupName, BodyPart type, Activity activityType, Direction direction, int phaseNumber) {
+		boolean enabledForEdit = activityType.hasOwnGfx(type);
+		if (!enabledForEdit) {
+			return getAnimPhase(groupName, type, Activity.STANDING, direction, phaseNumber);
+		}
+
+		return getAnimPhase(groupName, type, activityType, direction, phaseNumber);
+	}
+
+	public AnimTilePhase getAnimPhase(String groupName, BodyPart type, Activity activityType, Direction direction, int phaseNumber) {
 		if (phaseNumber < 1) {
 			phaseNumber = 1;
 		}

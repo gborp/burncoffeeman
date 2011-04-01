@@ -23,7 +23,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.braids.burncoffeeman.common.Activity;
-import com.braids.burncoffeeman.common.AnimTilePhaseType;
+import com.braids.burncoffeeman.common.BodyPart;
 import com.braids.burncoffeeman.common.Direction;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -173,9 +173,9 @@ public class MainEditor {
 
 		EditorManager em = EditorManager.getInstance();
 
-		em.setCurrentHead(em.getAnimTilePhase((String) cbGroupHead.getSelectedItem(), AnimTilePhaseType.HEAD, type, direction, phase));
-		em.setCurrentBody(em.getAnimTilePhase((String) cbGroupBody.getSelectedItem(), AnimTilePhaseType.BODY, type, direction, phase));
-		em.setCurrentLegs(em.getAnimTilePhase((String) cbGroupLegs.getSelectedItem(), AnimTilePhaseType.LEGS, type, direction, phase));
+		em.setCurrentHead(em.getAnimTilePhase((String) cbGroupHead.getSelectedItem(), BodyPart.HEAD, type, direction, phase));
+		em.setCurrentBody(em.getAnimTilePhase((String) cbGroupBody.getSelectedItem(), BodyPart.BODY, type, direction, phase));
+		em.setCurrentLegs(em.getAnimTilePhase((String) cbGroupLegs.getSelectedItem(), BodyPart.LEGS, type, direction, phase));
 		editor.animChanged();
 	}
 
