@@ -13,7 +13,7 @@ import java.util.List;
 
 import com.braids.burncoffeeman.common.Activity;
 import com.braids.burncoffeeman.common.AnimTilePhase;
-import com.braids.burncoffeeman.common.AnimTilePhaseType;
+import com.braids.burncoffeeman.common.BodyPart;
 import com.braids.burncoffeeman.common.BombPhases;
 import com.braids.burncoffeeman.common.BombType;
 import com.braids.burncoffeeman.common.Direction;
@@ -173,9 +173,9 @@ public class ScaledGfxHelper {
 		if (result == null) {
 			GraphicsTemplateManager gtm = GraphicsTemplateManager.getInstance();
 
-			AnimTilePhase head = gtm.getAnimPhase(headGroupName, AnimTilePhaseType.HEAD, activityType, direction, phaseNumber);
-			AnimTilePhase body = gtm.getAnimPhase(bodyGroupName, AnimTilePhaseType.BODY, activityType, direction, phaseNumber);
-			AnimTilePhase legs = gtm.getAnimPhase(legsGroupName, AnimTilePhaseType.LEGS, activityType, direction, phaseNumber);
+			AnimTilePhase head = gtm.getAnimPhase(headGroupName, BodyPart.HEAD, activityType, direction, phaseNumber);
+			AnimTilePhase body = gtm.getAnimPhase(bodyGroupName, BodyPart.BODY, activityType, direction, phaseNumber);
+			AnimTilePhase legs = gtm.getAnimPhase(legsGroupName, BodyPart.LEGS, activityType, direction, phaseNumber);
 
 			result = new BufferedImage(size + 1, size + 1, BufferedImage.TYPE_INT_ARGB);
 			GfxHelper.paintBombermanAnimPhase(result.getGraphics(), size / 16f, phaseNumber, slot.ownColor1, slot.ownColor2, head, body, legs);

@@ -10,14 +10,14 @@ import javax.imageio.ImageIO;
 public class AnimTilePhase {
 
 	private String            groupName;
-	private AnimTilePhaseType type;
+	private BodyPart type;
 	private Direction         direction;
 	private Activity          activityType;
 	private int               phaseNumber;
 
 	private Color[][]         arGfx;
 
-	public AnimTilePhase(String groupName, AnimTilePhaseType type, Activity activityType, Direction direction, int phase) {
+	public AnimTilePhase(String groupName, BodyPart type, Activity activityType, Direction direction, int phase) {
 		this.groupName = groupName;
 		this.type = type;
 		this.activityType = activityType;
@@ -101,7 +101,7 @@ public class AnimTilePhase {
 		}
 	}
 
-	public AnimTilePhaseType getType() {
+	public BodyPart getType() {
 		return type;
 	}
 
