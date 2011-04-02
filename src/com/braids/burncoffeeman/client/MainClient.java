@@ -7,6 +7,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 
 import com.braids.burncoffeeman.common.BombModel;
 import com.braids.burncoffeeman.common.ClientInputModel;
@@ -30,6 +32,12 @@ public class MainClient {
 
 	public MainClient() throws IOException {
 
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		GraphicsTemplateManager.init();
 
 		levelModel = new LevelModel(Constants.LEVEL_WIDTH, Constants.LEVEL_HEIGHT);
@@ -49,9 +57,12 @@ public class MainClient {
 		displayer.setLevelModel(levelModel);
 		displayer.setPlayers(players);
 		displayer.setBombs(bombs);
-		displayer.setFocusable(true);
 
-		frame.add(displayer, cc.xy(1, 1));
+		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+
+		tabbedPane.add(displayer);
+
+		frame.add(tabbedPane, cc.xy(1, 1));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);

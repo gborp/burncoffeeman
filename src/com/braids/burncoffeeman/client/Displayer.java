@@ -41,6 +41,8 @@ public class Displayer extends JPanel {
 				repaint();
 			}
 		}).start();
+		setFocusable(true);
+		setName("Play");
 	}
 
 	public void setLevelModel(LevelModel levelModel) {
