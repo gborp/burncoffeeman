@@ -1,12 +1,16 @@
 package com.braids.burncoffeeman.client;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 
@@ -29,6 +33,7 @@ public class MainClient {
 	private Displayer           displayer;
 	private Players             players;
 	private Bombs               bombs;
+	private ClientSettings      clientSettings;
 
 	public MainClient() throws IOException {
 
@@ -58,9 +63,20 @@ public class MainClient {
 		displayer.setPlayers(players);
 		displayer.setBombs(bombs);
 
+		clientSettings = new ClientSettings();
+
+		JPanel pnlServerConfig = new JPanel(new FormLayout("p,2dlu,p", "p,2dlu,p"));
+		pnlServerConfig.setName("Server");
+
+		JButton btnStartServer = new JButton(new StartServerAction());
+
+		pnlServerConfig.add(btnStartServer, cc.xy(3, 1));
+
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
 		tabbedPane.add(displayer);
+		tabbedPane.add(clientSettings.getDisplayComponent());
+		tabbedPane.add(pnlServerConfig);
 
 		frame.add(tabbedPane, cc.xy(1, 1));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,6 +84,18 @@ public class MainClient {
 		frame.setVisible(true);
 		frame.setSize(Constants.LEVEL_WIDTH * 32, Constants.LEVEL_HEIGHT * 32);
 
+		setDefaults();
+	}
+
+	private void setDefaults() {
+		clientSettings.setDefaults();
+	}
+
+	public static void main(String[] args) throws IOException {
+		new MainClient();
+	}
+
+	public void startClient() throws IOException {
 		comm = new CommunicationClient(this);
 		new Thread(new Runnable() {
 
@@ -122,11 +150,6 @@ public class MainClient {
 		displayer.addKeyListener(new GameKeyListener(clientInputModel, comm));
 	}
 
-	public static void main(String[] args) throws IOException {
-		new MainClient();
-
-	}
-
 	public LevelModel getLevelModel() {
 		return levelModel;
 	}
@@ -157,5 +180,21 @@ public class MainClient {
 
 	public void setPlayerInfoModel(PlayerInfoModel data) {
 		players.setPlayerInfoModel(data);
+	}
+
+	private class StartServerAction extends AbstractAction {
+
+		public StartServerAction() {
+			super("Start server");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			try {
+				startClient();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+
 	}
 }

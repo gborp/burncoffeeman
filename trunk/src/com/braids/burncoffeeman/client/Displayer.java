@@ -6,10 +6,12 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -26,13 +28,15 @@ import com.braids.burncoffeeman.common.PlayerModel;
 
 public class Displayer extends JPanel {
 
+	private boolean                 connected;
 	private LevelModel              levelModel;
 	private Players                 players;
 	private Bombs                   bombs;
 	private GraphicsTemplateManager gtm;
 	private int                     animationCounter;
+	private BufferedImage           gfxNoServerConnection;
 
-	public Displayer() {
+	public Displayer() throws IOException {
 		gtm = GraphicsTemplateManager.getInstance();
 
 		new Timer(Constants.MAIN_CYCLE_PERIOD, new ActionListener() {
@@ -43,6 +47,7 @@ public class Displayer extends JPanel {
 		}).start();
 		setFocusable(true);
 		setName("Play");
+
 	}
 
 	public void setLevelModel(LevelModel levelModel) {
@@ -60,9 +65,24 @@ public class Displayer extends JPanel {
 	protected void paintComponent(Graphics g) {
 		// super.paintComponent(g);
 
-		if (levelModel == null) {
+		if (!connected || levelModel == null) {
+
+			if (gfxNoServerConnection == null) {
+				try {
+					gfxNoServerConnection = ImageIO.read(new File("gfx/noserverconnection.png"));
+				} catch (IOException ex) {}
+			}
+
+			if (gfxNoServerConnection != null) {
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, getWidth(), getHeight());
+				Image scaled = gfxNoServerConnection.getScaledInstance(getWidth(), getHeight(), java.awt.Image.SCALE_REPLICATE);
+				g.drawImage(scaled, 0, 0, null);
+			}
+
 			return;
 		}
+		gfxNoServerConnection = null;
 
 		animationCounter = (animationCounter + 1) & 0xffff;
 
@@ -163,5 +183,13 @@ public class Displayer extends JPanel {
 
 	public void setBombImage(GfxByteModel data) throws IOException {
 		gtm.loadBombs(Helper.loadImageFromByteArray(data.getGfx()));
+	}
+
+	public void setConnected(boolean connected) {
+		this.connected = connected;
+	}
+
+	public boolean isConnected() {
+		return connected;
 	}
 }
