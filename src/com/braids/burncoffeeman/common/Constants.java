@@ -5,6 +5,8 @@ import java.nio.charset.Charset;
 
 public class Constants {
 
+	public static final int     MAX_LOCAL_PLAYER_NUMBER                 = 4;
+
 	public static final Color   TRANSPARENT_COLOR_1                     = new Color(96, 96, 96);
 	public static final Color   TRANSPARENT_COLOR_2                     = new Color(160, 160, 160);
 
